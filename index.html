@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  ============================================================================
+  $SUGAR — single-file landing page. No build step. Edit and open.
+
+  BEFORE YOU SHIP, REPLACE THESE (each appears in the HTML, not in JS):
+    1. CONTRACT ADDRESS  — search for  REPLACE_CONTRACT
+       appears twice: front-of-pack LOT NO. and base-of-pack LOT NO.
+       (the copy button reads the address out of the DOM, so no third copy)
+    2. LINKS             — search for  REPLACE_LINK
+       buy (Jupiter/pump.fun), chart (DexScreener), X, Telegram, Solscan
+    3. og:url / og:image — already set to https://sugarsol.fun (og.png ships beside this file)
+    4. SUPPLY            — search for  1,000,000,000  if your mint differs
+
+  Every number printed here is either real or 0. Do not add one that is not.
+  ============================================================================
+-->
+
+<title>$SUGAR — Everybody loves sugar</title>
+<meta name="description" content="Everybody loves sugar. We just printed a ticker on it. A meme token on Solana.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="$SUGAR — Everybody loves sugar">
+<meta property="og:description" content="Everybody loves sugar. We just printed a ticker on it.">
+<meta property="og:url" content="https://sugarsol.fun">
+<meta property="og:image" content="https://sugarsol.fun/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F7F6F1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Sometype+Mono:wght@400..700&display=swap" rel="stylesheet">
+
+<script>
+  document.documentElement.classList.add('js');
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('rm');
+  }
+</script>
+
+<style>
+/* ── stock, ink, furniture ────────────────────────────────────────────── */
+:root{
+  --stock-front:#F7F6F1;   /* bleached refined stock — front of pack        */
+  --stock-back:#EBE7DC;    /* reverse side — every back-of-pack section     */
+  --stock-kraft:#DED4C0;   /* unbleached — base panel ONLY. whole budget.   */
+  --ink:#141210;           /* print ink            17.5:1 on front stock    */
+  --ink-2:#6A6459;         /* second ink, small print   5.4:1               */
+  --rule:#C7C0B1;          /* hairlines. never text.                        */
+  --spot:#BE3A10;          /* the one spot ink. 5.1:1. display + fills only.*/
+  --bar:#17140F;           /* reversed-out bars                             */
+
+  --disp:'Archivo',system-ui,sans-serif;
+  --mono:'Sometype Mono','IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+
+  --gut:clamp(20px,5vw,64px);
+  --band:clamp(52px,7vw,104px);
+  --maxw:1180px;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--stock-front);
+  color:var(--ink);
+  font-family:var(--disp);
+  font-variation-settings:'wdth' 100,'wght' 400;
+  font-size:clamp(16.5px,1.05vw,18.5px);
+  line-height:1.62;
+  overflow-x:hidden;
+}
+img,svg{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--spot);outline-offset:3px}
+
+/* paper stock, not "grain overlay". multiply, so it darkens fibre only. */
+.stock-tex{
+  position:fixed;inset:0;pointer-events:none;z-index:60;
+  opacity:.045;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── print furniture ──────────────────────────────────────────────────── */
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gut)}
+.kicker{
+  font-family:var(--mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--spot);
+  margin:0 0 10px;
+}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.small{font-family:var(--mono);font-size:11.5px;line-height:1.55;color:var(--ink-2)}
+
+h2.head{
+  font-family:var(--disp);font-variation-settings:'wdth' 100,'wght' 600;
+  font-size:clamp(26px,3.6vw,44px);letter-spacing:-.012em;line-height:1.14;
+  margin:0 0 4px;max-width:24ch;
+}
+.head-rule{height:3px;background:var(--ink);width:64px;margin:20px 0 28px;transform-origin:left}
+.prose{max-width:62ch}
+.prose p{margin:0 0 1.05em}
+.prose p:last-child{margin-bottom:0}
+
+/* section = stock change. this is the "turn it over" gesture. */
+.sheet{padding-block:var(--band)}
+.sheet--back{background:var(--stock-back)}
+.sheet--kraft{background:var(--stock-kraft)}
+
+/* perforation between panels */
+.perf{height:1px;width:100%;background:repeating-linear-gradient(90deg,var(--rule) 0 7px,transparent 7px 14px)}
+
+/* ── buttons ──────────────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:.5em;
+  font-family:var(--mono);font-size:12.5px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
+  padding:13px 20px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+  border-radius:0;cursor:pointer;transition:background .14s linear,color .14s linear;
+}
+.btn:hover{background:var(--ink);color:var(--stock-front)}
+.btn--solid{background:var(--spot);border-color:var(--spot);color:#fff}
+.btn--solid:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px}
+
+/* ── top reel edge ────────────────────────────────────────────────────── */
+.reel{border-bottom:1px solid var(--rule);background:var(--stock-front)}
+.reel__bar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  height:44px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+}
+.reel__bar a{text-decoration:none;border-bottom:1px solid var(--spot);color:var(--spot);padding-bottom:2px}
+
+.tape{overflow:hidden;border-top:1px solid var(--rule);background:var(--stock-front)}
+.tape--dark{background:var(--bar);border-color:var(--bar)}
+.tape__run{display:flex;width:max-content;animation:tape 46s linear infinite}
+.tape--dark .tape__run{animation-duration:64s}
+.tape:hover .tape__run{animation-play-state:paused}
+.tape__seg{
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-2);white-space:nowrap;padding:9px 0;
+}
+.tape--dark .tape__seg{color:#C9C0AE}
+@keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── front of pack ────────────────────────────────────────────────────── */
+.front{position:relative;padding-block:clamp(26px,4vw,44px) clamp(30px,5vw,60px);cursor:default}
+.front__edge{
+  display:flex;justify-content:space-between;gap:16px;
+  font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--spot);
+  padding-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.front__edge span:last-child{color:var(--ink-2)}
+
+.mark{position:absolute;width:15px;height:15px;opacity:.5;pointer-events:none}
+.mark::before,.mark::after{content:"";position:absolute;background:var(--ink-2)}
+.mark::before{left:7px;top:0;width:1px;height:15px}
+.mark::after{top:7px;left:0;height:1px;width:15px}
+.mark--tl{top:14px;left:14px}
+.mark--tr{top:14px;right:14px}
+
+.wordmark{
+  font-family:var(--disp);font-variation-settings:'wdth' 125,'wght' 700;
+  font-size:clamp(52px,13.6vw,190px);line-height:.84;letter-spacing:-.018em;
+  text-transform:uppercase;margin:clamp(26px,4vw,52px) 0 0;
+}
+.wordmark__ink{display:inline-block}
+.front__body{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(24px,5vw,72px);
+  margin-top:clamp(26px,3.5vw,44px);
+}
+.thesis{
+  font-family:var(--disp);font-variation-settings:'wdth' 100,'wght' 500;
+  font-size:clamp(20px,2.5vw,30px);line-height:1.26;letter-spacing:-.014em;
+  margin:0;max-width:19ch;
+}
+.front__cta{margin-top:clamp(24px,3vw,36px)}
+
+/* quality stamp. the tautology is the joke; it does not spin. */
+.roundel{
+  flex:0 0 auto;width:clamp(112px,13vw,158px);aspect-ratio:1;border-radius:50%;
+  border:1.5px solid var(--spot);display:grid;place-items:center;text-align:center;
+  font-family:var(--mono);font-size:clamp(9.5px,.85vw,11px);font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--spot);line-height:1.85;
+}
+.roundel b{font-weight:500;display:block}
+.roundel em{font-style:normal;display:block;opacity:.55}
+
+.lot{margin-top:clamp(26px,3.4vw,40px);border-top:1px solid var(--rule);padding-top:16px;max-width:760px}
+.lot__label{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px}
+.lot__row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.lot__val{
+  font-family:var(--mono);font-size:clamp(11.5px,1.15vw,14px);font-weight:500;
+  border:1px solid var(--rule);padding:11px 13px;flex:1 1 320px;min-width:0;
+  overflow-wrap:anywhere;background:var(--stock-front);transition:border-color .2s linear;
+}
+.lot__val.is-copied{border-color:var(--spot)}
+.lot__warn{margin-top:9px}
+
+.tap{margin-top:clamp(30px,4vw,48px);border-top:1px solid var(--rule);padding-top:18px;display:flex;flex-wrap:wrap;gap:10px 44px;align-items:baseline}
+.tap__instr{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase}
+.tap__count{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--spot);font-variant-numeric:tabular-nums}
+.tap__note{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);flex:1 1 300px;line-height:1.5}
+
+.front__foot{
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  margin-top:clamp(30px,4vw,52px);padding-top:14px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);
+}
+.swatches{display:flex;gap:0;margin-top:16px}
+.swatches i{width:34px;height:9px;display:block}
+
+/* ── drawn sugar ──────────────────────────────────────────────────────── */
+/* Flat ink on flat paper — the product illustration a packet actually
+   carries. No photography, no gloss, no floating 3D object. */
+.draw{display:block;width:100%;height:auto;color:var(--ink)}
+.fig{margin:0;display:flex;flex-direction:column;gap:13px}
+.fig figcaption{
+  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-2);line-height:1.6;
+}
+.fig--cube{width:clamp(148px,17vw,214px)}
+.fig--xt{width:100%;max-width:340px}
+.fig--loaf{width:76px;flex:0 0 auto;gap:9px}
+.fig--loaf figcaption{font-size:9px;letter-spacing:.14em}
+
+.front__stack{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:clamp(20px,2.6vw,34px)}
+.split{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(28px,5vw,72px);align-items:start}
+.fact__row{display:flex;gap:18px;align-items:flex-start}
+
+/* ── allergen / warning boxes ─────────────────────────────────────────── */
+.allergen{
+  font-family:var(--mono);font-size:clamp(11.5px,1.1vw,13px);font-weight:500;
+  letter-spacing:.13em;text-transform:uppercase;line-height:1.7;
+  border:2px solid var(--ink);padding:15px 18px;margin-top:32px;display:inline-block;
+}
+
+/* ── nutrition panel — the centrepiece ────────────────────────────────── */
+.panel{
+  background:var(--stock-front);border:1px solid var(--ink);
+  padding:clamp(16px,2.2vw,26px);max-width:520px;
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+}
+.panel__title{
+  font-family:var(--disp);font-variation-settings:'wdth' 112,'wght' 700;
+  font-size:clamp(21px,2.6vw,28px);text-transform:uppercase;letter-spacing:-.01em;
+  line-height:1;margin:0 0 8px;
+}
+.panel table{width:100%;border-collapse:collapse;font-size:13px}
+.panel th,.panel td{padding:5px 0;text-align:left;font-weight:400;vertical-align:baseline}
+.panel td.n{text-align:right;white-space:nowrap;font-weight:500;padding-left:10px}
+.panel tr{border-bottom:1px solid var(--rule)}
+.panel .r5{border-bottom:5px solid var(--ink)}
+.panel .none{border-bottom:0}
+.panel .in1{padding-left:15px}
+.panel .in2{padding-left:30px;color:var(--ink-2)}
+.panel .lede{font-weight:700}
+.panel__dv{font-size:11px;text-align:right;letter-spacing:.04em;padding-top:6px!important}
+.panel__note{font-size:11px;line-height:1.5;color:var(--ink-2);margin-top:12px}
+.panel__serv{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:4px 0}
+
+.verify{margin-top:30px;max-width:62ch}
+.verify__links{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:10px;font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.verify__links a{text-decoration:none;border-bottom:1.5px solid var(--spot);padding-bottom:2px}
+.verify__links a:hover{background:var(--spot);color:#fff;border-color:var(--spot)}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(26px,4vw,64px);align-items:start}
+
+/* ── directions ───────────────────────────────────────────────────────── */
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2.6vw,38px);
+  padding:24px 0;border-top:1px solid var(--rule);
+}
+.steps li:last-child{border-bottom:1px solid var(--rule)}
+.steps__n{
+  font-family:var(--disp);font-variation-settings:'wdth' 118,'wght' 700;
+  font-size:clamp(30px,4.4vw,50px);line-height:.9;color:var(--spot);font-variant-numeric:tabular-nums;
+}
+.steps h3{
+  font-family:var(--disp);font-variation-settings:'wdth' 100,'wght' 600;
+  font-size:clamp(17px,1.7vw,21px);letter-spacing:-.01em;margin:0 0 6px;text-transform:uppercase;
+}
+.steps p{margin:0;max-width:56ch}
+
+/* ── warnings ─────────────────────────────────────────────────────────── */
+.warnbox{border:3px solid var(--ink);background:var(--stock-front);max-width:640px}
+.warnbox__bar{
+  background:var(--bar);color:var(--stock-front);
+  font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.24em;
+  text-transform:uppercase;padding:9px 16px;
+}
+.warnbox dl{margin:0;padding:6px 16px 18px}
+.warnbox dt{
+  font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;margin-top:16px;
+}
+.warnbox dd{margin:4px 0 0;font-size:16px;line-height:1.55;color:var(--ink)}
+
+.qa{margin-top:clamp(30px,4vw,48px)}
+.qa dt{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-2);margin-top:22px}
+.qa dd{margin:5px 0 0;max-width:58ch}
+.qa dl{margin:0}
+.close-line{
+  margin-top:clamp(34px,4.5vw,56px);padding-left:20px;border-left:3px solid var(--spot);
+  font-family:var(--disp);font-variation-settings:'wdth' 100,'wght' 500;
+  font-size:clamp(18px,2.2vw,26px);line-height:1.3;letter-spacing:-.012em;max-width:24ch;
+}
+
+/* ── base of pack ─────────────────────────────────────────────────────── */
+.base__grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:start}
+.base h4{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);margin:0 0 8px}
+.base__block{margin-bottom:28px}
+.base__links{display:flex;gap:20px;font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.base__links a{text-decoration:none;border-bottom:1.5px solid var(--ink)}
+.barcode{display:block;width:100%;max-width:300px}
+.fact{border:1px solid var(--ink);padding:16px 18px;margin-top:26px;max-width:420px}
+.fact h4{color:var(--spot)}
+.fact p{margin:0;font-size:15px;line-height:1.55}
+.legal{margin-top:clamp(34px,4.5vw,54px);padding-top:18px;border-top:1px solid var(--ink);max-width:78ch}
+.stamp{
+  text-align:center;margin-top:clamp(40px,6vw,84px);
+  font-family:var(--disp);font-variation-settings:'wdth' 118,'wght' 700;
+  font-size:clamp(22px,3.4vw,42px);text-transform:uppercase;letter-spacing:.01em;color:var(--spot);
+}
+
+/* ── motion ───────────────────────────────────────────────────────────── */
+/* Nothing on this page is hidden waiting on a scroll observer. Every element
+   is readable at rest, so a shared link, a preview card and a printed page
+   all show the finished thing. Motion only ever starts from that state. */
+
+/* the one rule that draws itself: a printed rule, not content */
+.head-rule{transform:scaleX(1)}
+.js .head-rule{transform:scaleX(0)}
+.js .head-rule.in{transform:scaleX(1);transition:transform .8s cubic-bezier(.16,1,.3,1)}
+
+/* ink registration: the spot layer finds its register. once, on load. */
+@keyframes reg{from{transform:translate(2px,-1px)}to{transform:translate(0,0)}}
+.wordmark__ink{animation:reg .45s cubic-bezier(.16,1,.3,1) both}
+
+.jolt{animation:jolt .26s cubic-bezier(.22,.61,.36,1)}
+@keyframes jolt{
+  0%{transform:translateY(0) rotate(0)}
+  35%{transform:translateY(4px) rotate(.4deg)}
+  100%{transform:translateY(0) rotate(0)}
+}
+
+.rm .tape__run,.rm .wordmark__ink,.rm .jolt{animation:none!important}
+.rm .head-rule{transform:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){
+  .tape__run,.wordmark__ink{animation:none!important}
+  .head-rule{transform:none!important;transition:none!important}
+}
+
+/* ── narrow ───────────────────────────────────────────────────────────── */
+@media (max-width:820px){
+  .two,.base__grid,.split{grid-template-columns:minmax(0,1fr)}
+  .reel__bar{font-size:10px;letter-spacing:.12em}
+  .mark{display:none}
+}
+@media (max-width:620px){
+  /* thesis and the buy row come first; the stamp is a reward, not a gate */
+  .front__body{flex-direction:column;align-items:flex-start;gap:30px}
+  .front__stack{flex-direction:row;align-items:center;gap:26px;align-self:flex-end}
+  .fig--cube{width:116px}
+  .roundel{width:100px}
+  .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .btn{justify-content:center;padding-inline:12px}
+}
+@media (max-width:520px){
+  .steps li{grid-template-columns:minmax(0,1fr);gap:8px}
+  .front__edge{font-size:9.5px;letter-spacing:.14em}
+}
+</style>
+</head>
+
+<body>
+<div class="stock-tex" aria-hidden="true"></div>
+
+<!-- ═══ TOP REEL EDGE ════════════════════════════════════════════════════ -->
+<header class="reel">
+  <div class="wrap reel__bar">
+    <span>$SUGAR — Solana</span>
+    <!-- REPLACE_LINK buy -->
+    <a href="#buy">Add sugar ↗</a>
+  </div>
+</header>
+
+<div class="tape" aria-hidden="true">
+  <div class="tape__run">
+    <div class="tape__seg">The ticker is $SUGAR • Ingredients: $SUGAR • Contains $SUGAR • $SUGAR is fully soluble • 1 packet = 1 packet • Not a significant source of utility •&nbsp;</div>
+    <div class="tape__seg">The ticker is $SUGAR • Ingredients: $SUGAR • Contains $SUGAR • $SUGAR is fully soluble • 1 packet = 1 packet • Not a significant source of utility •&nbsp;</div>
+  </div>
+</div>
+
+<!-- ═══ FRONT OF PACK ════════════════════════════════════════════════════ -->
+<main>
+<section class="front" id="front">
+  <span class="mark mark--tl" aria-hidden="true"></span>
+  <span class="mark mark--tr" aria-hidden="true"></span>
+
+  <div class="wrap">
+    <div class="front__edge">
+      <span>Pure refined · Granulated · ICUMSA 45</span>
+      <span>Net contents as stated</span>
+    </div>
+
+    <h1 class="wordmark"><span class="wordmark__ink">$Sugar</span></h1>
+
+    <div class="front__body">
+      <div>
+        <p class="thesis">Everybody loves sugar. We just printed a ticker on it.</p>
+
+        <div class="cta-row front__cta" id="buy">
+      <!-- REPLACE_LINK buy: Jupiter or pump.fun swap URL -->
+          <a class="btn btn--solid" href="#" rel="noopener">Add sugar</a>
+          <!-- REPLACE_LINK chart: DexScreener -->
+          <a class="btn" href="#" rel="noopener">Chart</a>
+          <!-- REPLACE_LINK x -->
+          <a class="btn" href="#" rel="noopener">X</a>
+          <!-- REPLACE_LINK telegram -->
+          <a class="btn" href="#" rel="noopener">Telegram</a>
+        </div>
+      </div>
+
+      <div class="front__stack">
+        <figure class="fig fig--cube">
+          <svg class="draw draw--cube" viewBox="-116 -10 232 256" role="img" aria-label="A sugar cube"><g fill="currentColor"><circle cx="-84.0" cy="49.9" r="1.21"/><circle cx="-64.8" cy="38.7" r="1.12"/><circle cx="-68.6" cy="42.4" r="1.12"/><circle cx="-72.8" cy="46.0" r="1.15"/><circle cx="-76.4" cy="49.9" r="1.12"/><circle cx="-49.7" cy="30.6" r="1.03"/><circle cx="-53.5" cy="34.6" r="1.04"/><circle cx="-57.4" cy="38.7" r="1.15"/><circle cx="-61.1" cy="42.4" r="1.20"/><circle cx="-65.1" cy="45.9" r="1.11"/><circle cx="-68.8" cy="50.3" r="1.12"/><circle cx="-72.8" cy="53.7" r="1.22"/><circle cx="-30.7" cy="19.2" r="0.93"/><circle cx="-34.4" cy="23.6" r="0.94"/><circle cx="-38.0" cy="27.3" r="1.05"/><circle cx="-42.2" cy="30.9" r="1.11"/><circle cx="-46.1" cy="34.7" r="1.05"/><circle cx="-49.4" cy="38.5" r="1.09"/><circle cx="-53.4" cy="42.1" r="1.10"/><circle cx="-57.2" cy="46.0" r="1.07"/><circle cx="-61.2" cy="49.8" r="1.15"/><circle cx="-64.6" cy="53.6" r="1.19"/><circle cx="-68.6" cy="57.8" r="1.17"/><circle cx="-11.7" cy="8.3" r="0.84"/><circle cx="-15.0" cy="11.8" r="1.01"/><circle cx="-19.1" cy="15.8" r="1.05"/><circle cx="-22.9" cy="19.2" r="0.91"/><circle cx="-26.9" cy="23.4" r="0.92"/><circle cx="-30.7" cy="27.2" r="1.05"/><circle cx="-34.1" cy="31.0" r="1.15"/><circle cx="-38.0" cy="34.9" r="1.03"/><circle cx="-42.1" cy="38.3" r="1.07"/><circle cx="-45.6" cy="42.4" r="1.15"/><circle cx="-49.8" cy="46.4" r="1.10"/><circle cx="-53.6" cy="50.2" r="1.14"/><circle cx="-57.3" cy="53.6" r="1.07"/><circle cx="-60.9" cy="57.6" r="1.07"/><circle cx="-65.1" cy="61.5" r="1.27"/><circle cx="0.1" cy="4.3" r="0.96"/><circle cx="-3.9" cy="8.1" r="0.95"/><circle cx="-7.9" cy="11.7" r="1.04"/><circle cx="-11.2" cy="15.7" r="0.92"/><circle cx="-15.1" cy="19.6" r="1.08"/><circle cx="-19.2" cy="23.3" r="1.01"/><circle cx="-22.7" cy="27.2" r="1.03"/><circle cx="-26.6" cy="30.7" r="1.08"/><circle cx="-30.4" cy="35.0" r="1.08"/><circle cx="-34.5" cy="38.3" r="1.18"/><circle cx="-38.0" cy="42.0" r="1.21"/><circle cx="-42.2" cy="46.0" r="1.13"/><circle cx="-45.6" cy="50.1" r="1.08"/><circle cx="-49.7" cy="53.9" r="1.19"/><circle cx="-53.5" cy="57.6" r="1.27"/><circle cx="-57.3" cy="61.4" r="1.09"/><circle cx="3.7" cy="8.1" r="0.96"/><circle cx="-0.3" cy="11.7" r="0.88"/><circle cx="-4.0" cy="15.8" r="0.97"/><circle cx="-7.6" cy="19.3" r="1.03"/><circle cx="-11.6" cy="23.1" r="1.10"/><circle cx="-15.5" cy="27.1" r="0.96"/><circle cx="-19.1" cy="31.1" r="0.97"/><circle cx="-22.8" cy="35.0" r="1.09"/><circle cx="-26.8" cy="38.4" r="1.01"/><circle cx="-30.8" cy="42.3" r="1.05"/><circle cx="-34.0" cy="46.0" r="1.17"/><circle cx="-38.4" cy="50.2" r="1.06"/><circle cx="-41.8" cy="53.5" r="1.19"/><circle cx="-46.1" cy="57.6" r="1.15"/><circle cx="-49.8" cy="61.4" r="1.23"/><circle cx="-53.3" cy="65.2" r="1.19"/><circle cx="11.5" cy="8.0" r="0.87"/><circle cx="7.6" cy="11.8" r="0.89"/><circle cx="4.1" cy="15.4" r="0.96"/><circle cx="-0.2" cy="19.4" r="0.90"/><circle cx="-3.9" cy="23.1" r="1.10"/><circle cx="-7.5" cy="26.9" r="1.03"/><circle cx="-11.7" cy="30.6" r="1.06"/><circle cx="-15.2" cy="34.8" r="1.05"/><circle cx="-19.1" cy="38.6" r="1.05"/><circle cx="-22.8" cy="42.5" r="1.13"/><circle cx="-27.0" cy="46.1" r="1.02"/><circle cx="-30.3" cy="50.3" r="1.08"/><circle cx="-34.5" cy="53.5" r="1.22"/><circle cx="-38.0" cy="57.7" r="1.14"/><circle cx="-42.2" cy="61.3" r="1.20"/><circle cx="-46.1" cy="65.4" r="1.14"/><circle cx="-49.6" cy="69.2" r="1.32"/><circle cx="15.6" cy="12.0" r="0.94"/><circle cx="11.7" cy="15.6" r="0.88"/><circle cx="7.6" cy="19.3" r="1.04"/><circle cx="3.9" cy="23.0" r="1.11"/><circle cx="-0.2" cy="27.1" r="0.97"/><circle cx="-3.5" cy="31.2" r="0.95"/><circle cx="-7.7" cy="34.9" r="1.03"/><circle cx="-11.3" cy="38.5" r="1.02"/><circle cx="-15.5" cy="42.3" r="1.07"/><circle cx="-18.9" cy="46.3" r="1.12"/><circle cx="-22.7" cy="50.1" r="1.11"/><circle cx="-27.0" cy="53.5" r="1.10"/><circle cx="-30.6" cy="57.6" r="1.09"/><circle cx="-34.4" cy="61.6" r="1.26"/><circle cx="-38.0" cy="65.0" r="1.12"/><circle cx="-41.7" cy="69.1" r="1.30"/><circle cx="18.8" cy="15.6" r="0.96"/><circle cx="15.0" cy="19.3" r="0.99"/><circle cx="11.3" cy="23.6" r="0.96"/><circle cx="7.3" cy="27.1" r="1.13"/><circle cx="3.7" cy="30.8" r="1.14"/><circle cx="0.1" cy="34.9" r="0.98"/><circle cx="-3.8" cy="38.7" r="1.10"/><circle cx="-7.7" cy="42.3" r="1.17"/><circle cx="-11.7" cy="46.1" r="1.20"/><circle cx="-15.1" cy="49.9" r="1.25"/><circle cx="-19.2" cy="54.1" r="1.19"/><circle cx="-23.2" cy="57.5" r="1.20"/><circle cx="-26.7" cy="61.7" r="1.15"/><circle cx="-30.7" cy="65.1" r="1.30"/><circle cx="-34.1" cy="69.4" r="1.27"/><circle cx="-38.1" cy="73.1" r="1.35"/><circle cx="23.0" cy="19.4" r="0.98"/><circle cx="18.9" cy="23.1" r="1.06"/><circle cx="15.2" cy="27.4" r="1.03"/><circle cx="11.3" cy="31.0" r="1.01"/><circle cx="7.4" cy="34.8" r="1.11"/><circle cx="3.8" cy="38.8" r="1.16"/><circle cx="-0.0" cy="42.3" r="1.09"/><circle cx="-3.6" cy="46.1" r="1.15"/><circle cx="-7.7" cy="50.0" r="1.06"/><circle cx="-11.3" cy="53.8" r="1.20"/><circle cx="-15.5" cy="57.4" r="1.17"/><circle cx="-19.2" cy="61.6" r="1.18"/><circle cx="-22.8" cy="65.0" r="1.27"/><circle cx="-26.8" cy="68.9" r="1.34"/><circle cx="-30.2" cy="72.8" r="1.17"/><circle cx="-34.2" cy="76.5" r="1.19"/><circle cx="30.8" cy="19.7" r="1.07"/><circle cx="26.4" cy="23.3" r="1.03"/><circle cx="23.1" cy="27.3" r="1.11"/><circle cx="18.8" cy="31.1" r="0.98"/><circle cx="15.3" cy="34.8" r="1.14"/><circle cx="11.7" cy="38.5" r="1.14"/><circle cx="7.9" cy="42.5" r="1.14"/><circle cx="4.1" cy="46.5" r="1.13"/><circle cx="0.2" cy="49.8" r="1.17"/><circle cx="-3.9" cy="53.9" r="1.14"/><circle cx="-7.6" cy="57.4" r="1.16"/><circle cx="-11.4" cy="61.2" r="1.13"/><circle cx="-15.1" cy="65.6" r="1.17"/><circle cx="-19.4" cy="69.1" r="1.17"/><circle cx="-22.9" cy="72.8" r="1.12"/><circle cx="-26.7" cy="76.4" r="1.16"/><circle cx="-30.5" cy="80.7" r="1.36"/><circle cx="34.5" cy="23.4" r="1.11"/><circle cx="30.6" cy="27.3" r="1.14"/><circle cx="26.5" cy="30.8" r="1.01"/><circle cx="23.0" cy="34.6" r="1.11"/><circle cx="19.4" cy="38.3" r="1.02"/><circle cx="15.1" cy="42.2" r="1.18"/><circle cx="11.7" cy="46.3" r="1.12"/><circle cx="7.3" cy="49.8" r="1.25"/><circle cx="4.1" cy="53.5" r="1.10"/><circle cx="0.2" cy="57.9" r="1.16"/><circle cx="-3.8" cy="61.5" r="1.08"/><circle cx="-7.4" cy="65.2" r="1.26"/><circle cx="-11.7" cy="69.3" r="1.18"/><circle cx="-15.1" cy="72.7" r="1.36"/><circle cx="-18.8" cy="76.6" r="1.14"/><circle cx="-22.6" cy="80.4" r="1.20"/><circle cx="37.9" cy="27.2" r="0.93"/><circle cx="34.2" cy="30.8" r="1.06"/><circle cx="30.5" cy="34.4" r="1.05"/><circle cx="26.7" cy="38.6" r="1.09"/><circle cx="23.1" cy="42.5" r="1.21"/><circle cx="18.8" cy="46.2" r="1.10"/><circle cx="15.1" cy="50.3" r="1.10"/><circle cx="11.4" cy="53.8" r="1.05"/><circle cx="7.6" cy="57.7" r="1.14"/><circle cx="3.9" cy="61.8" r="1.11"/><circle cx="0.1" cy="65.4" r="1.26"/><circle cx="-3.6" cy="68.9" r="1.23"/><circle cx="-7.6" cy="72.7" r="1.26"/><circle cx="-11.6" cy="76.6" r="1.37"/><circle cx="-15.1" cy="80.7" r="1.19"/><circle cx="-18.9" cy="84.4" r="1.37"/><circle cx="42.1" cy="30.6" r="1.14"/><circle cx="38.2" cy="34.6" r="1.06"/><circle cx="34.3" cy="38.3" r="0.99"/><circle cx="30.6" cy="42.1" r="1.11"/><circle cx="26.5" cy="46.4" r="1.17"/><circle cx="23.1" cy="49.9" r="1.24"/><circle cx="19.1" cy="54.0" r="1.24"/><circle cx="15.1" cy="57.4" r="1.21"/><circle cx="11.7" cy="61.8" r="1.11"/><circle cx="7.6" cy="65.1" r="1.10"/><circle cx="3.6" cy="69.0" r="1.21"/><circle cx="-0.2" cy="72.7" r="1.19"/><circle cx="-4.0" cy="76.8" r="1.35"/><circle cx="-7.7" cy="80.3" r="1.36"/><circle cx="-11.2" cy="84.2" r="1.39"/><circle cx="-15.4" cy="88.3" r="1.38"/><circle cx="49.7" cy="30.7" r="1.10"/><circle cx="45.9" cy="35.0" r="1.14"/><circle cx="42.2" cy="38.7" r="1.12"/><circle cx="38.2" cy="42.3" r="1.13"/><circle cx="34.3" cy="46.1" r="1.19"/><circle cx="30.4" cy="50.1" r="1.09"/><circle cx="26.8" cy="53.7" r="1.27"/><circle cx="22.7" cy="57.8" r="1.07"/><circle cx="19.3" cy="61.1" r="1.15"/><circle cx="15.1" cy="65.5" r="1.27"/><circle cx="11.7" cy="68.9" r="1.31"/><circle cx="7.9" cy="72.6" r="1.19"/><circle cx="3.5" cy="77.0" r="1.16"/><circle cx="-0.1" cy="80.5" r="1.15"/><circle cx="-3.8" cy="84.0" r="1.36"/><circle cx="-7.3" cy="87.8" r="1.40"/><circle cx="-11.3" cy="92.0" r="1.32"/><circle cx="53.2" cy="35.0" r="1.01"/><circle cx="49.9" cy="38.6" r="1.08"/><circle cx="45.6" cy="42.2" r="1.08"/><circle cx="42.2" cy="46.4" r="1.21"/><circle cx="38.2" cy="50.1" r="1.03"/><circle cx="34.5" cy="53.7" r="1.27"/><circle cx="30.5" cy="57.9" r="1.20"/><circle cx="26.7" cy="61.4" r="1.21"/><circle cx="22.7" cy="65.2" r="1.20"/><circle cx="18.8" cy="69.2" r="1.11"/><circle cx="15.4" cy="72.6" r="1.35"/><circle cx="11.3" cy="76.4" r="1.25"/><circle cx="7.7" cy="80.4" r="1.28"/><circle cx="4.0" cy="84.7" r="1.39"/><circle cx="-0.0" cy="88.1" r="1.34"/><circle cx="-3.6" cy="92.1" r="1.29"/><circle cx="57.0" cy="38.5" r="1.05"/><circle cx="53.7" cy="42.1" r="1.17"/><circle cx="49.8" cy="46.0" r="1.08"/><circle cx="46.1" cy="50.3" r="1.11"/><circle cx="41.9" cy="53.8" r="1.09"/><circle cx="38.3" cy="57.4" r="1.24"/><circle cx="34.5" cy="61.8" r="1.28"/><circle cx="30.7" cy="65.2" r="1.32"/><circle cx="26.5" cy="69.2" r="1.21"/><circle cx="23.0" cy="73.1" r="1.13"/><circle cx="19.3" cy="77.1" r="1.26"/><circle cx="15.2" cy="80.6" r="1.28"/><circle cx="11.5" cy="84.5" r="1.37"/><circle cx="7.9" cy="88.4" r="1.40"/><circle cx="3.6" cy="92.3" r="1.40"/><circle cx="0.2" cy="96.0" r="1.21"/><circle cx="65.1" cy="38.4" r="1.08"/><circle cx="60.9" cy="42.1" r="1.04"/><circle cx="57.3" cy="46.4" r="1.24"/><circle cx="53.7" cy="49.9" r="1.07"/><circle cx="49.9" cy="53.9" r="1.19"/><circle cx="45.6" cy="57.8" r="1.22"/><circle cx="41.7" cy="61.3" r="1.08"/><circle cx="38.0" cy="65.6" r="1.31"/><circle cx="34.1" cy="69.3" r="1.29"/><circle cx="30.2" cy="73.1" r="1.29"/><circle cx="26.6" cy="76.7" r="1.24"/><circle cx="22.8" cy="80.6" r="1.21"/><circle cx="19.1" cy="84.3" r="1.38"/><circle cx="15.4" cy="88.0" r="1.32"/><circle cx="11.6" cy="91.7" r="1.23"/><circle cx="68.7" cy="42.2" r="1.04"/><circle cx="64.7" cy="45.9" r="1.11"/><circle cx="61.3" cy="50.1" r="1.20"/><circle cx="57.0" cy="53.9" r="1.15"/><circle cx="53.2" cy="57.9" r="1.21"/><circle cx="49.6" cy="61.5" r="1.15"/><circle cx="45.7" cy="65.3" r="1.19"/><circle cx="41.8" cy="69.2" r="1.28"/><circle cx="38.0" cy="72.6" r="1.34"/><circle cx="34.2" cy="76.4" r="1.25"/><circle cx="30.5" cy="80.6" r="1.15"/><circle cx="72.2" cy="45.9" r="1.13"/><circle cx="68.7" cy="50.3" r="1.05"/><circle cx="65.1" cy="53.8" r="1.08"/><circle cx="61.0" cy="57.6" r="1.24"/><circle cx="57.4" cy="61.6" r="1.27"/><circle cx="53.2" cy="65.4" r="1.10"/><circle cx="49.8" cy="68.9" r="1.21"/><circle cx="76.1" cy="50.1" r="1.12"/><circle cx="72.6" cy="53.9" r="1.14"/><circle cx="68.5" cy="57.8" r="1.18"/><circle cx="65.0" cy="61.5" r="1.19"/><circle cx="83.8" cy="49.8" r="1.25"/><circle cx="-85.2" cy="52.4" r="1.70"/><circle cx="-81.3" cy="56.3" r="1.43"/><circle cx="-85.6" cy="60.4" r="1.68"/><circle cx="-77.8" cy="60.3" r="1.45"/><circle cx="-81.4" cy="64.2" r="1.47"/><circle cx="-85.2" cy="67.7" r="1.46"/><circle cx="-70.1" cy="60.4" r="1.58"/><circle cx="-74.1" cy="64.0" r="1.54"/><circle cx="-77.4" cy="67.9" r="1.63"/><circle cx="-81.5" cy="71.2" r="1.60"/><circle cx="-85.1" cy="75.4" r="1.80"/><circle cx="-66.2" cy="64.0" r="1.48"/><circle cx="-70.1" cy="67.7" r="1.67"/><circle cx="-73.6" cy="71.6" r="1.64"/><circle cx="-77.7" cy="75.3" r="1.48"/><circle cx="-81.2" cy="78.9" r="1.53"/><circle cx="-85.1" cy="83.0" r="1.54"/><circle cx="-62.6" cy="68.1" r="1.72"/><circle cx="-66.2" cy="71.5" r="1.60"/><circle cx="-69.9" cy="75.5" r="1.56"/><circle cx="-74.2" cy="79.3" r="1.51"/><circle cx="-77.8" cy="83.2" r="1.75"/><circle cx="-81.4" cy="86.6" r="1.79"/><circle cx="-85.0" cy="90.6" r="1.62"/><circle cx="-58.9" cy="71.9" r="1.74"/><circle cx="-62.4" cy="75.1" r="1.60"/><circle cx="-66.4" cy="79.2" r="1.76"/><circle cx="-70.0" cy="83.3" r="1.55"/><circle cx="-73.8" cy="87.1" r="1.74"/><circle cx="-77.4" cy="90.3" r="1.66"/><circle cx="-81.7" cy="94.2" r="1.80"/><circle cx="-85.4" cy="98.6" r="1.76"/><circle cx="-50.7" cy="71.9" r="1.51"/><circle cx="-54.9" cy="75.5" r="1.48"/><circle cx="-58.6" cy="79.2" r="1.79"/><circle cx="-62.4" cy="83.2" r="1.71"/><circle cx="-66.5" cy="86.7" r="1.64"/><circle cx="-70.3" cy="91.0" r="1.53"/><circle cx="-73.8" cy="94.5" r="1.72"/><circle cx="-77.6" cy="98.6" r="1.88"/><circle cx="-81.6" cy="102.4" r="1.61"/><circle cx="-85.5" cy="105.6" r="1.84"/><circle cx="-46.8" cy="75.7" r="1.61"/><circle cx="-50.8" cy="79.0" r="1.65"/><circle cx="-54.7" cy="82.7" r="1.55"/><circle cx="-58.3" cy="86.6" r="1.72"/><circle cx="-62.2" cy="90.7" r="1.70"/><circle cx="-66.4" cy="94.2" r="1.56"/><circle cx="-70.1" cy="98.3" r="1.57"/><circle cx="-73.8" cy="102.4" r="1.57"/><circle cx="-77.3" cy="106.2" r="1.58"/><circle cx="-81.3" cy="109.5" r="1.63"/><circle cx="-85.4" cy="113.6" r="1.62"/><circle cx="-43.2" cy="79.0" r="1.79"/><circle cx="-46.9" cy="82.8" r="1.56"/><circle cx="-50.9" cy="86.6" r="1.73"/><circle cx="-54.9" cy="90.8" r="1.62"/><circle cx="-58.3" cy="94.2" r="1.78"/><circle cx="-62.1" cy="98.5" r="1.67"/><circle cx="-66.1" cy="102.0" r="1.70"/><circle cx="-70.2" cy="106.0" r="1.79"/><circle cx="-73.7" cy="109.6" r="1.93"/><circle cx="-77.5" cy="113.9" r="1.88"/><circle cx="-81.3" cy="117.2" r="1.79"/><circle cx="-85.6" cy="121.3" r="1.66"/><circle cx="-39.6" cy="82.7" r="1.57"/><circle cx="-43.1" cy="86.6" r="1.58"/><circle cx="-47.1" cy="90.9" r="1.81"/><circle cx="-51.2" cy="94.6" r="1.75"/><circle cx="-54.4" cy="97.9" r="1.81"/><circle cx="-58.4" cy="101.8" r="1.86"/><circle cx="-62.1" cy="106.1" r="1.70"/><circle cx="-66.1" cy="109.7" r="1.63"/><circle cx="-69.9" cy="113.2" r="1.72"/><circle cx="-73.8" cy="117.4" r="1.93"/><circle cx="-77.6" cy="121.3" r="1.71"/><circle cx="-81.8" cy="125.0" r="1.77"/><circle cx="-85.4" cy="128.6" r="1.84"/><circle cx="-31.6" cy="83.0" r="1.75"/><circle cx="-35.4" cy="87.1" r="1.83"/><circle cx="-39.8" cy="90.8" r="1.63"/><circle cx="-43.4" cy="94.2" r="1.66"/><circle cx="-47.0" cy="98.0" r="1.57"/><circle cx="-51.2" cy="102.1" r="1.80"/><circle cx="-54.4" cy="105.6" r="1.80"/><circle cx="-58.6" cy="109.8" r="1.83"/><circle cx="-62.4" cy="113.3" r="1.71"/><circle cx="-66.0" cy="117.3" r="1.67"/><circle cx="-70.0" cy="121.5" r="1.89"/><circle cx="-74.2" cy="125.1" r="1.86"/><circle cx="-78.0" cy="128.5" r="1.74"/><circle cx="-81.4" cy="132.7" r="1.71"/><circle cx="-85.1" cy="136.3" r="1.70"/><circle cx="-28.3" cy="86.7" r="1.78"/><circle cx="-31.7" cy="90.8" r="1.65"/><circle cx="-36.0" cy="94.6" r="1.83"/><circle cx="-39.6" cy="98.0" r="1.65"/><circle cx="-43.6" cy="102.0" r="1.74"/><circle cx="-46.8" cy="106.0" r="1.71"/><circle cx="-50.9" cy="109.8" r="1.77"/><circle cx="-54.5" cy="113.5" r="1.79"/><circle cx="-58.4" cy="117.1" r="1.76"/><circle cx="-62.4" cy="121.0" r="1.85"/><circle cx="-66.4" cy="124.8" r="1.85"/><circle cx="-70.1" cy="129.1" r="1.81"/><circle cx="-73.9" cy="132.4" r="1.83"/><circle cx="-77.8" cy="136.7" r="1.86"/><circle cx="-81.7" cy="140.3" r="1.78"/><circle cx="-85.6" cy="144.3" r="1.93"/><circle cx="-24.1" cy="90.3" r="1.80"/><circle cx="-28.2" cy="94.6" r="1.59"/><circle cx="-31.8" cy="98.4" r="1.73"/><circle cx="-35.9" cy="102.2" r="1.91"/><circle cx="-39.6" cy="106.2" r="1.63"/><circle cx="-43.4" cy="109.4" r="1.70"/><circle cx="-46.9" cy="113.7" r="1.94"/><circle cx="-50.7" cy="117.5" r="1.95"/><circle cx="-55.0" cy="121.4" r="1.77"/><circle cx="-58.4" cy="125.1" r="1.85"/><circle cx="-62.5" cy="128.6" r="1.99"/><circle cx="-66.2" cy="132.5" r="1.85"/><circle cx="-69.9" cy="136.6" r="1.74"/><circle cx="-74.1" cy="140.4" r="1.78"/><circle cx="-77.7" cy="144.1" r="1.86"/><circle cx="-81.7" cy="147.7" r="1.91"/><circle cx="-20.4" cy="94.2" r="1.60"/><circle cx="-24.1" cy="98.4" r="1.63"/><circle cx="-28.2" cy="101.8" r="1.85"/><circle cx="-31.9" cy="105.8" r="1.60"/><circle cx="-35.4" cy="109.8" r="1.90"/><circle cx="-39.2" cy="113.4" r="1.68"/><circle cx="-43.4" cy="117.3" r="1.85"/><circle cx="-47.2" cy="121.5" r="1.84"/><circle cx="-50.7" cy="125.2" r="1.71"/><circle cx="-54.9" cy="128.8" r="1.83"/><circle cx="-58.7" cy="132.9" r="1.68"/><circle cx="-62.1" cy="136.7" r="1.68"/><circle cx="-66.1" cy="140.5" r="1.72"/><circle cx="-69.9" cy="144.1" r="2.03"/><circle cx="-73.9" cy="147.8" r="1.97"/><circle cx="-78.0" cy="152.1" r="1.93"/><circle cx="-13.0" cy="94.8" r="1.64"/><circle cx="-16.2" cy="98.0" r="1.79"/><circle cx="-20.7" cy="102.0" r="1.63"/><circle cx="-24.3" cy="106.0" r="1.73"/><circle cx="-28.0" cy="110.0" r="1.77"/><circle cx="-32.1" cy="113.5" r="1.89"/><circle cx="-35.6" cy="117.6" r="1.72"/><circle cx="-39.2" cy="121.0" r="1.70"/><circle cx="-43.6" cy="124.9" r="1.97"/><circle cx="-47.1" cy="129.0" r="2.01"/><circle cx="-50.8" cy="132.8" r="1.97"/><circle cx="-54.8" cy="136.8" r="2.00"/><circle cx="-58.9" cy="140.4" r="2.06"/><circle cx="-62.5" cy="144.2" r="1.99"/><circle cx="-66.3" cy="147.6" r="1.78"/><circle cx="-69.7" cy="152.0" r="1.81"/><circle cx="-74.0" cy="155.4" r="1.87"/><circle cx="-8.9" cy="98.2" r="1.81"/><circle cx="-12.7" cy="102.0" r="1.66"/><circle cx="-16.5" cy="106.2" r="1.88"/><circle cx="-20.6" cy="109.7" r="1.85"/><circle cx="-24.5" cy="113.4" r="1.88"/><circle cx="-28.0" cy="117.6" r="1.76"/><circle cx="-31.6" cy="121.1" r="1.85"/><circle cx="-35.6" cy="124.9" r="1.96"/><circle cx="-39.4" cy="129.0" r="1.87"/><circle cx="-43.5" cy="132.4" r="1.78"/><circle cx="-47.2" cy="136.5" r="1.89"/><circle cx="-50.7" cy="140.1" r="1.78"/><circle cx="-54.8" cy="144.3" r="1.71"/><circle cx="-58.4" cy="148.2" r="1.80"/><circle cx="-62.3" cy="152.0" r="1.84"/><circle cx="-66.4" cy="155.6" r="1.89"/><circle cx="-4.8" cy="101.8" r="1.62"/><circle cx="-8.8" cy="105.9" r="1.66"/><circle cx="-12.7" cy="109.9" r="1.93"/><circle cx="-16.5" cy="113.8" r="1.71"/><circle cx="-20.2" cy="117.0" r="1.74"/><circle cx="-23.9" cy="121.2" r="1.85"/><circle cx="-28.1" cy="124.9" r="1.78"/><circle cx="-31.6" cy="128.5" r="1.98"/><circle cx="-36.0" cy="132.9" r="1.79"/><circle cx="-39.6" cy="136.6" r="1.75"/><circle cx="-43.1" cy="140.4" r="1.84"/><circle cx="-47.3" cy="144.0" r="1.70"/><circle cx="-50.9" cy="147.9" r="2.05"/><circle cx="-54.6" cy="152.0" r="1.98"/><circle cx="-58.5" cy="155.6" r="1.84"/><circle cx="-62.2" cy="159.5" r="1.88"/><circle cx="-1.1" cy="106.0" r="1.75"/><circle cx="-4.9" cy="109.6" r="1.84"/><circle cx="-8.7" cy="113.9" r="1.94"/><circle cx="-12.7" cy="117.3" r="1.74"/><circle cx="-16.8" cy="121.0" r="1.90"/><circle cx="-20.3" cy="125.2" r="1.88"/><circle cx="-24.5" cy="128.8" r="1.74"/><circle cx="-27.9" cy="132.9" r="1.94"/><circle cx="-31.6" cy="136.5" r="2.00"/><circle cx="-35.8" cy="140.4" r="1.90"/><circle cx="-39.6" cy="144.2" r="1.83"/><circle cx="-43.5" cy="147.8" r="1.84"/><circle cx="-47.4" cy="151.7" r="2.06"/><circle cx="-51.1" cy="155.6" r="1.94"/><circle cx="-54.6" cy="159.6" r="2.00"/><circle cx="-58.4" cy="163.3" r="2.02"/><circle cx="-1.5" cy="113.6" r="1.77"/><circle cx="-4.9" cy="117.3" r="1.87"/><circle cx="-9.0" cy="121.1" r="1.73"/><circle cx="-12.8" cy="125.1" r="1.90"/><circle cx="-16.8" cy="128.6" r="1.69"/><circle cx="-20.4" cy="132.4" r="1.89"/><circle cx="-24.3" cy="136.4" r="2.00"/><circle cx="-27.8" cy="140.0" r="1.83"/><circle cx="-31.6" cy="143.9" r="1.87"/><circle cx="-35.8" cy="148.2" r="2.05"/><circle cx="-39.6" cy="151.8" r="1.89"/><circle cx="-43.2" cy="155.9" r="1.90"/><circle cx="-47.4" cy="159.3" r="1.77"/><circle cx="-50.9" cy="163.1" r="2.09"/><circle cx="-54.7" cy="167.3" r="2.08"/><circle cx="-1.6" cy="120.9" r="1.81"/><circle cx="-4.9" cy="124.8" r="1.92"/><circle cx="-8.6" cy="128.8" r="1.97"/><circle cx="-13.0" cy="132.7" r="1.71"/><circle cx="-16.5" cy="136.5" r="1.91"/><circle cx="-20.5" cy="140.0" r="2.02"/><circle cx="-23.9" cy="144.3" r="1.92"/><circle cx="-27.7" cy="148.1" r="1.98"/><circle cx="-31.8" cy="151.9" r="1.78"/><circle cx="-36.0" cy="155.4" r="2.03"/><circle cx="-39.6" cy="159.7" r="1.82"/><circle cx="-43.1" cy="163.1" r="2.10"/><circle cx="-47.3" cy="167.3" r="1.79"/><circle cx="-1.0" cy="129.1" r="1.83"/><circle cx="-5.2" cy="132.5" r="1.71"/><circle cx="-8.9" cy="136.2" r="1.80"/><circle cx="-12.6" cy="140.0" r="1.92"/><circle cx="-16.7" cy="143.9" r="2.01"/><circle cx="-20.3" cy="148.2" r="1.84"/><circle cx="-24.4" cy="151.4" r="1.93"/><circle cx="-27.8" cy="155.4" r="1.86"/><circle cx="-32.0" cy="159.2" r="2.12"/><circle cx="-35.5" cy="163.3" r="1.91"/><circle cx="-39.1" cy="167.2" r="1.77"/><circle cx="-43.3" cy="170.9" r="2.11"/><circle cx="-1.0" cy="136.8" r="1.80"/><circle cx="-4.9" cy="140.6" r="1.97"/><circle cx="-9.1" cy="144.3" r="1.74"/><circle cx="-12.7" cy="147.7" r="1.88"/><circle cx="-16.2" cy="151.7" r="1.85"/><circle cx="-20.6" cy="155.2" r="1.90"/><circle cx="-24.3" cy="159.2" r="2.06"/><circle cx="-28.3" cy="163.1" r="2.04"/><circle cx="-32.0" cy="166.7" r="2.15"/><circle cx="-35.9" cy="170.7" r="1.94"/><circle cx="-39.7" cy="175.0" r="1.86"/><circle cx="-1.5" cy="143.9" r="1.88"/><circle cx="-5.4" cy="147.9" r="1.83"/><circle cx="-8.6" cy="151.6" r="1.76"/><circle cx="-12.5" cy="155.8" r="1.94"/><circle cx="-16.5" cy="159.4" r="1.95"/><circle cx="-20.7" cy="163.2" r="1.78"/><circle cx="-23.9" cy="166.7" r="1.79"/><circle cx="-27.7" cy="170.5" r="2.17"/><circle cx="-32.1" cy="174.6" r="2.17"/><circle cx="-35.9" cy="178.4" r="2.10"/><circle cx="-1.3" cy="151.8" r="1.99"/><circle cx="-5.0" cy="155.7" r="1.89"/><circle cx="-8.8" cy="159.4" r="2.12"/><circle cx="-12.9" cy="163.0" r="2.01"/><circle cx="-16.7" cy="167.0" r="2.06"/><circle cx="-20.6" cy="171.0" r="1.83"/><circle cx="-24.0" cy="174.7" r="2.02"/><circle cx="-27.8" cy="178.4" r="1.88"/><circle cx="-1.6" cy="159.1" r="1.85"/><circle cx="-4.9" cy="163.2" r="1.99"/><circle cx="-9.0" cy="167.2" r="2.03"/><circle cx="-13.0" cy="171.1" r="1.85"/><circle cx="-16.4" cy="174.5" r="1.80"/><circle cx="-20.5" cy="178.8" r="1.94"/><circle cx="-24.5" cy="182.4" r="2.08"/><circle cx="-1.3" cy="167.0" r="1.87"/><circle cx="-5.4" cy="170.9" r="1.96"/><circle cx="-9.2" cy="174.5" r="1.98"/><circle cx="-12.7" cy="178.1" r="2.14"/><circle cx="-16.7" cy="182.2" r="2.18"/><circle cx="-20.4" cy="185.8" r="2.14"/><circle cx="-1.5" cy="174.3" r="2.10"/><circle cx="-5.5" cy="178.8" r="2.12"/><circle cx="-9.1" cy="182.5" r="1.95"/><circle cx="-12.6" cy="185.9" r="2.20"/><circle cx="-1.0" cy="182.2" r="2.09"/><circle cx="-5.1" cy="186.4" r="2.21"/><circle cx="-8.7" cy="190.1" r="2.13"/><circle cx="-1.3" cy="190.0" r="2.06"/><circle cx="-5.0" cy="193.5" r="1.88"/><circle cx="-1.3" cy="197.2" r="2.10"/><circle cx="12.6" cy="94.5" r="2.12"/><circle cx="9.2" cy="98.2" r="2.16"/><circle cx="4.8" cy="102.1" r="2.12"/><circle cx="1.5" cy="106.0" r="2.45"/><circle cx="31.9" cy="83.3" r="2.33"/><circle cx="27.9" cy="86.5" r="2.08"/><circle cx="24.5" cy="90.8" r="2.37"/><circle cx="20.2" cy="94.4" r="2.03"/><circle cx="16.6" cy="98.3" r="2.37"/><circle cx="12.5" cy="101.8" r="2.42"/><circle cx="8.9" cy="105.7" r="2.45"/><circle cx="5.4" cy="109.4" r="2.31"/><circle cx="1.4" cy="113.8" r="2.12"/><circle cx="51.1" cy="71.5" r="2.36"/><circle cx="46.8" cy="75.5" r="2.38"/><circle cx="43.5" cy="79.0" r="2.36"/><circle cx="39.6" cy="83.3" r="2.30"/><circle cx="35.8" cy="86.7" r="2.37"/><circle cx="31.6" cy="90.8" r="2.24"/><circle cx="28.1" cy="94.7" r="2.12"/><circle cx="23.9" cy="98.2" r="2.21"/><circle cx="20.5" cy="102.1" r="2.42"/><circle cx="16.8" cy="106.1" r="2.19"/><circle cx="12.8" cy="109.6" r="2.20"/><circle cx="9.0" cy="113.5" r="2.33"/><circle cx="4.9" cy="117.6" r="2.44"/><circle cx="1.6" cy="121.1" r="2.26"/><circle cx="66.2" cy="64.1" r="1.92"/><circle cx="62.3" cy="68.0" r="2.18"/><circle cx="58.7" cy="71.4" r="2.15"/><circle cx="54.5" cy="75.4" r="2.22"/><circle cx="51.3" cy="79.4" r="2.02"/><circle cx="47.2" cy="83.3" r="2.09"/><circle cx="43.2" cy="86.7" r="2.07"/><circle cx="39.8" cy="90.4" r="2.06"/><circle cx="35.4" cy="94.5" r="2.22"/><circle cx="32.0" cy="98.0" r="2.14"/><circle cx="28.0" cy="102.2" r="2.11"/><circle cx="24.5" cy="105.9" r="2.07"/><circle cx="20.5" cy="109.8" r="2.27"/><circle cx="16.3" cy="113.9" r="2.23"/><circle cx="12.7" cy="117.5" r="2.26"/><circle cx="8.9" cy="120.9" r="2.46"/><circle cx="4.9" cy="125.3" r="2.39"/><circle cx="1.5" cy="129.1" r="2.58"/><circle cx="85.0" cy="52.5" r="2.11"/><circle cx="81.5" cy="56.2" r="2.27"/><circle cx="77.3" cy="60.0" r="2.08"/><circle cx="74.1" cy="64.2" r="2.20"/><circle cx="70.1" cy="68.0" r="2.23"/><circle cx="66.3" cy="71.8" r="2.15"/><circle cx="62.5" cy="75.5" r="2.28"/><circle cx="58.6" cy="79.0" r="2.05"/><circle cx="55.0" cy="82.9" r="2.32"/><circle cx="50.8" cy="87.1" r="2.33"/><circle cx="47.0" cy="90.5" r="2.27"/><circle cx="43.5" cy="94.6" r="2.05"/><circle cx="39.2" cy="98.6" r="2.30"/><circle cx="35.9" cy="102.1" r="2.45"/><circle cx="32.2" cy="106.1" r="2.29"/><circle cx="27.8" cy="109.9" r="2.51"/><circle cx="23.9" cy="113.7" r="2.48"/><circle cx="20.5" cy="117.5" r="2.32"/><circle cx="16.5" cy="121.5" r="2.25"/><circle cx="12.8" cy="124.8" r="2.53"/><circle cx="9.0" cy="129.1" r="2.21"/><circle cx="5.1" cy="132.4" r="2.25"/><circle cx="1.2" cy="136.6" r="2.51"/><circle cx="85.6" cy="59.8" r="1.91"/><circle cx="81.2" cy="63.6" r="2.04"/><circle cx="77.7" cy="67.8" r="2.19"/><circle cx="74.0" cy="71.8" r="2.27"/><circle cx="69.9" cy="75.3" r="1.99"/><circle cx="66.3" cy="79.4" r="2.20"/><circle cx="62.3" cy="83.0" r="2.24"/><circle cx="58.5" cy="86.7" r="2.27"/><circle cx="55.0" cy="90.7" r="2.05"/><circle cx="50.7" cy="94.4" r="2.21"/><circle cx="46.8" cy="98.2" r="2.23"/><circle cx="43.5" cy="101.8" r="2.33"/><circle cx="39.5" cy="105.7" r="2.32"/><circle cx="35.5" cy="109.5" r="2.42"/><circle cx="31.8" cy="113.7" r="2.37"/><circle cx="28.3" cy="117.3" r="2.49"/><circle cx="24.4" cy="120.9" r="2.57"/><circle cx="20.2" cy="125.2" r="2.30"/><circle cx="16.6" cy="128.5" r="2.23"/><circle cx="12.5" cy="132.9" r="2.37"/><circle cx="9.2" cy="136.4" r="2.44"/><circle cx="5.4" cy="140.4" r="2.43"/><circle cx="1.6" cy="144.4" r="2.45"/><circle cx="85.1" cy="67.6" r="2.28"/><circle cx="81.7" cy="71.6" r="2.11"/><circle cx="77.8" cy="75.3" r="2.06"/><circle cx="73.9" cy="79.0" r="2.07"/><circle cx="70.0" cy="83.1" r="2.36"/><circle cx="66.5" cy="87.0" r="2.02"/><circle cx="62.4" cy="90.3" r="2.19"/><circle cx="58.2" cy="94.5" r="2.29"/><circle cx="55.0" cy="98.1" r="2.16"/><circle cx="51.0" cy="102.3" r="2.21"/><circle cx="47.1" cy="106.2" r="2.26"/><circle cx="43.3" cy="109.9" r="2.27"/><circle cx="39.2" cy="113.8" r="2.13"/><circle cx="35.9" cy="117.4" r="2.36"/><circle cx="32.0" cy="121.2" r="2.24"/><circle cx="28.1" cy="124.7" r="2.34"/><circle cx="24.0" cy="128.7" r="2.20"/><circle cx="20.4" cy="132.6" r="2.42"/><circle cx="16.2" cy="136.4" r="2.59"/><circle cx="12.8" cy="140.5" r="2.27"/><circle cx="8.6" cy="143.9" r="2.59"/><circle cx="5.1" cy="148.1" r="2.41"/><circle cx="1.5" cy="151.4" r="2.52"/><circle cx="85.6" cy="75.3" r="2.25"/><circle cx="81.4" cy="78.9" r="2.37"/><circle cx="77.6" cy="83.3" r="2.08"/><circle cx="73.9" cy="86.8" r="2.35"/><circle cx="70.1" cy="90.7" r="2.18"/><circle cx="66.1" cy="94.4" r="2.13"/><circle cx="62.2" cy="98.2" r="2.04"/><circle cx="58.5" cy="102.3" r="2.24"/><circle cx="54.5" cy="106.2" r="2.19"/><circle cx="50.7" cy="109.9" r="2.41"/><circle cx="47.1" cy="113.2" r="2.45"/><circle cx="43.2" cy="117.0" r="2.24"/><circle cx="39.6" cy="121.1" r="2.42"/><circle cx="35.5" cy="125.2" r="2.56"/><circle cx="31.7" cy="128.8" r="2.46"/><circle cx="27.8" cy="132.8" r="2.36"/><circle cx="24.0" cy="136.6" r="2.29"/><circle cx="20.2" cy="140.4" r="2.28"/><circle cx="16.5" cy="144.2" r="2.28"/><circle cx="13.0" cy="147.7" r="2.29"/><circle cx="9.2" cy="151.5" r="2.30"/><circle cx="4.8" cy="155.8" r="2.24"/><circle cx="1.4" cy="159.2" r="2.46"/><circle cx="85.3" cy="82.8" r="2.03"/><circle cx="81.7" cy="86.7" r="2.34"/><circle cx="77.9" cy="90.5" r="2.14"/><circle cx="73.9" cy="94.6" r="2.09"/><circle cx="70.1" cy="98.3" r="2.09"/><circle cx="66.2" cy="102.0" r="2.18"/><circle cx="62.7" cy="106.2" r="2.33"/><circle cx="58.6" cy="109.7" r="2.27"/><circle cx="55.1" cy="113.4" r="2.19"/><circle cx="51.2" cy="117.5" r="2.46"/><circle cx="47.2" cy="120.9" r="2.26"/><circle cx="43.1" cy="125.1" r="2.59"/><circle cx="39.4" cy="128.6" r="2.36"/><circle cx="35.6" cy="132.5" r="2.53"/><circle cx="31.9" cy="136.2" r="2.33"/><circle cx="28.4" cy="140.0" r="2.42"/><circle cx="24.4" cy="144.0" r="2.47"/><circle cx="20.3" cy="148.1" r="2.27"/><circle cx="16.7" cy="151.6" r="2.33"/><circle cx="12.5" cy="155.4" r="2.25"/><circle cx="8.9" cy="159.6" r="2.54"/><circle cx="5.1" cy="163.0" r="2.26"/><circle cx="1.3" cy="166.9" r="2.31"/><circle cx="85.5" cy="90.8" r="2.20"/><circle cx="81.6" cy="94.6" r="2.39"/><circle cx="77.9" cy="98.4" r="2.22"/><circle cx="74.1" cy="102.0" r="2.09"/><circle cx="69.7" cy="105.8" r="2.43"/><circle cx="65.9" cy="109.5" r="2.12"/><circle cx="62.7" cy="113.3" r="2.16"/><circle cx="58.6" cy="117.5" r="2.46"/><circle cx="55.0" cy="121.2" r="2.45"/><circle cx="50.7" cy="125.3" r="2.28"/><circle cx="47.0" cy="128.6" r="2.23"/><circle cx="43.4" cy="132.7" r="2.30"/><circle cx="39.6" cy="136.5" r="2.21"/><circle cx="35.9" cy="140.5" r="2.56"/><circle cx="32.1" cy="144.0" r="2.40"/><circle cx="27.8" cy="148.2" r="2.52"/><circle cx="24.3" cy="151.7" r="2.50"/><circle cx="20.6" cy="155.4" r="2.27"/><circle cx="16.8" cy="159.5" r="2.67"/><circle cx="12.5" cy="163.3" r="2.72"/><circle cx="9.0" cy="166.9" r="2.31"/><circle cx="5.2" cy="171.0" r="2.28"/><circle cx="1.6" cy="174.9" r="2.60"/><circle cx="85.4" cy="98.0" r="2.44"/><circle cx="81.6" cy="101.8" r="2.21"/><circle cx="77.4" cy="105.6" r="2.28"/><circle cx="73.7" cy="109.7" r="2.27"/><circle cx="69.8" cy="113.4" r="2.51"/><circle cx="66.2" cy="117.2" r="2.28"/><circle cx="62.7" cy="121.5" r="2.48"/><circle cx="58.7" cy="125.1" r="2.31"/><circle cx="54.8" cy="128.9" r="2.41"/><circle cx="51.2" cy="133.0" r="2.32"/><circle cx="47.0" cy="136.2" r="2.63"/><circle cx="43.1" cy="140.0" r="2.40"/><circle cx="39.7" cy="144.3" r="2.63"/><circle cx="35.9" cy="148.0" r="2.60"/><circle cx="31.8" cy="151.5" r="2.37"/><circle cx="27.8" cy="155.4" r="2.27"/><circle cx="24.1" cy="159.6" r="2.43"/><circle cx="20.1" cy="163.2" r="2.49"/><circle cx="16.7" cy="167.2" r="2.54"/><circle cx="12.5" cy="171.1" r="2.28"/><circle cx="9.2" cy="174.5" r="2.71"/><circle cx="4.8" cy="178.6" r="2.77"/><circle cx="1.1" cy="182.4" r="2.62"/><circle cx="85.0" cy="105.9" r="2.06"/><circle cx="81.3" cy="109.9" r="2.13"/><circle cx="77.6" cy="113.4" r="2.10"/><circle cx="74.2" cy="117.4" r="2.35"/><circle cx="69.9" cy="121.0" r="2.23"/><circle cx="66.5" cy="125.2" r="2.25"/><circle cx="62.6" cy="128.5" r="2.51"/><circle cx="58.9" cy="132.8" r="2.17"/><circle cx="55.1" cy="136.7" r="2.53"/><circle cx="50.7" cy="140.1" r="2.57"/><circle cx="47.4" cy="144.1" r="2.66"/><circle cx="43.6" cy="148.0" r="2.43"/><circle cx="39.6" cy="151.7" r="2.26"/><circle cx="35.7" cy="155.9" r="2.72"/><circle cx="32.0" cy="159.0" r="2.56"/><circle cx="27.9" cy="163.4" r="2.47"/><circle cx="24.5" cy="166.8" r="2.28"/><circle cx="20.7" cy="171.1" r="2.36"/><circle cx="16.7" cy="174.7" r="2.52"/><circle cx="12.4" cy="178.4" r="2.35"/><circle cx="8.9" cy="182.5" r="2.65"/><circle cx="5.1" cy="186.2" r="2.55"/><circle cx="1.5" cy="190.0" r="2.80"/><circle cx="85.5" cy="113.4" r="2.37"/><circle cx="81.5" cy="117.1" r="2.16"/><circle cx="77.8" cy="121.2" r="2.56"/><circle cx="74.1" cy="125.1" r="2.22"/><circle cx="70.0" cy="128.7" r="2.48"/><circle cx="66.3" cy="132.5" r="2.48"/><circle cx="62.2" cy="136.5" r="2.62"/><circle cx="58.6" cy="140.5" r="2.24"/><circle cx="54.9" cy="144.4" r="2.39"/><circle cx="51.1" cy="147.7" r="2.38"/><circle cx="46.8" cy="152.0" r="2.34"/><circle cx="43.4" cy="155.8" r="2.58"/><circle cx="39.3" cy="159.4" r="2.49"/><circle cx="35.8" cy="163.4" r="2.35"/><circle cx="32.2" cy="166.9" r="2.43"/><circle cx="27.9" cy="171.0" r="2.39"/><circle cx="24.3" cy="174.4" r="2.63"/><circle cx="20.2" cy="178.2" r="2.39"/><circle cx="16.7" cy="182.0" r="2.45"/><circle cx="12.5" cy="186.0" r="2.34"/><circle cx="8.7" cy="189.8" r="2.56"/><circle cx="5.3" cy="193.4" r="2.39"/><circle cx="1.2" cy="197.7" r="2.72"/><circle cx="85.4" cy="121.0" r="2.42"/><circle cx="81.4" cy="124.9" r="2.30"/><circle cx="77.9" cy="128.6" r="2.15"/><circle cx="74.0" cy="132.6" r="2.60"/><circle cx="69.9" cy="136.5" r="2.29"/><circle cx="66.5" cy="140.4" r="2.61"/><circle cx="62.5" cy="144.2" r="2.25"/><circle cx="58.7" cy="147.9" r="2.49"/><circle cx="54.8" cy="152.0" r="2.37"/><circle cx="51.3" cy="155.2" r="2.23"/><circle cx="47.4" cy="159.1" r="2.32"/><circle cx="43.2" cy="162.9" r="2.26"/><circle cx="39.5" cy="167.3" r="2.67"/><circle cx="35.7" cy="170.5" r="2.59"/><circle cx="31.8" cy="174.9" r="2.35"/><circle cx="27.9" cy="178.6" r="2.47"/><circle cx="24.2" cy="182.0" r="2.70"/><circle cx="20.3" cy="186.0" r="2.72"/><circle cx="85.2" cy="129.0" r="2.44"/><circle cx="81.5" cy="132.4" r="2.27"/><circle cx="77.9" cy="136.2" r="2.48"/><circle cx="73.6" cy="140.4" r="2.34"/><circle cx="70.0" cy="144.0" r="2.23"/><circle cx="66.5" cy="147.6" r="2.38"/><circle cx="62.3" cy="151.5" r="2.39"/><circle cx="58.6" cy="155.6" r="2.32"/><circle cx="54.7" cy="159.2" r="2.65"/><circle cx="51.0" cy="163.3" r="2.42"/><circle cx="47.1" cy="167.1" r="2.70"/><circle cx="43.5" cy="170.8" r="2.51"/><circle cx="39.7" cy="174.4" r="2.67"/><circle cx="35.5" cy="178.2" r="2.47"/><circle cx="85.1" cy="136.2" r="2.21"/><circle cx="81.2" cy="140.6" r="2.59"/><circle cx="77.8" cy="143.9" r="2.37"/><circle cx="73.8" cy="147.9" r="2.53"/><circle cx="69.9" cy="151.9" r="2.24"/><circle cx="66.0" cy="155.6" r="2.55"/><circle cx="62.2" cy="159.1" r="2.57"/><circle cx="58.9" cy="163.2" r="2.57"/><circle cx="55.0" cy="167.0" r="2.41"/><circle cx="85.4" cy="144.0" r="2.50"/><circle cx="81.5" cy="147.8" r="2.56"/><circle cx="77.8" cy="151.9" r="2.57"/><circle cx="74.2" cy="155.8" r="2.38"/></g><g fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"><path d="M0.0 0.0Q42.9 24.5 86.6 50.0M86.6 50.0Q44.4 75.8 0.0 100.0M0.0 100.0Q-44.5 73.9 -86.6 50.0M-86.6 50.0Q-43.4 25.0 0.0 0.0M86.6 50.0Q86.3 100.7 86.6 150.0M86.6 150.0Q42.7 174.7 0.0 200.0M0.0 200.0Q-0.2 149.5 0.0 100.0M0.0 200.0Q-42.0 174.8 -86.6 150.0M-86.6 150.0Q-86.9 99.0 -86.6 50.0"/></g><g fill="currentColor"><circle cx="15.1" cy="222.3" r="1.26"/><circle cx="-56.3" cy="216.1" r="1.16"/><circle cx="24.0" cy="223.6" r="1.98"/><circle cx="-3.9" cy="222.0" r="2.03"/><circle cx="98.7" cy="220.8" r="1.92"/><circle cx="109.2" cy="217.3" r="1.99"/><circle cx="-37.1" cy="216.4" r="1.84"/><circle cx="35.1" cy="211.9" r="1.21"/><circle cx="-44.8" cy="229.8" r="1.57"/><circle cx="6.0" cy="227.8" r="1.67"/><circle cx="17.3" cy="223.2" r="1.35"/><circle cx="-19.9" cy="221.8" r="1.68"/><circle cx="38.9" cy="209.5" r="1.82"/><circle cx="-29.4" cy="211.1" r="1.91"/><circle cx="39.0" cy="225.9" r="1.23"/><circle cx="29.1" cy="208.0" r="1.96"/><circle cx="-25.0" cy="229.5" r="1.49"/><circle cx="-39.5" cy="214.7" r="2.01"/><circle cx="146.3" cy="216.5" r="1.01"/><circle cx="-53.0" cy="211.4" r="1.23"/><circle cx="41.1" cy="214.3" r="1.33"/><circle cx="4.4" cy="228.7" r="1.65"/><circle cx="-34.0" cy="208.2" r="1.09"/><circle cx="-34.8" cy="216.2" r="1.56"/><circle cx="-49.6" cy="228.4" r="1.74"/><circle cx="-38.4" cy="234.8" r="1.77"/></g></svg>
+          <figcaption>Serving suggestion.</figcaption>
+        </figure>
+        <div class="roundel"><span><b>1 packet</b><em>=</em><b>1 packet</b></span></div>
+      </div>
+    </div>
+
+    <div class="lot">
+      <div class="lot__label">Lot no.</div>
+      <div class="lot__row">
+        <!-- REPLACE_CONTRACT (1 of 2) -->
+        <code class="lot__val" id="ca">REPLACE_CONTRACT_ADDRESS_HERE</code>
+        <button class="btn" type="button" data-copy="#ca">Copy</button>
+      </div>
+      <p class="small lot__warn">Salt looks exactly like sugar. Read the label — every character.</p>
+    </div>
+
+    <div class="tap" id="tap">
+      <div>
+        <div class="tap__instr">Tap before opening.</div>
+        <div class="tap__count">Packets tapped · this device — <span id="tapn">0</span></div>
+      </div>
+      <p class="tap__note">Everybody does this before opening one. Nobody has ever explained why.</p>
+    </div>
+
+    <div class="front__foot">
+      <span>Net wt. 1,000,000,000 packets ℮</span>
+      <span>Nutrition information on reverse ▾</span>
+    </div>
+
+    <div class="swatches" aria-hidden="true">
+      <i style="background:#141210"></i><i style="background:#BE3A10"></i><i style="background:#C7C0B1"></i><i style="background:#F7F6F1;box-shadow:inset 0 0 0 1px #C7C0B1"></i>
+    </div>
+  </div>
+</section>
+
+<div class="perf" aria-hidden="true"></div>
+
+<!-- ═══ INGREDIENTS ══════════════════════════════════════════════════════ -->
+<section class="sheet sheet--back" id="about">
+  <div class="wrap">
+    <p class="kicker">Ingredients</p>
+    <h2 class="head">Ingredients: sugar.</h2>
+    <div class="head-rule"></div>
+
+    <div class="split">
+      <div>
+      <div class="prose">
+      <p>Single-ingredient products have the shortest labels in the shop. There is nothing to hide because there is nothing else in the bag.</p>
+      <p>Sugar has no protein, no fat, no fibre, no vitamins and no minerals. Four calories per gram and nothing else in either direction. The term for this is not an insult invented by critics — it is the technical description. Empty calories.</p>
+      <p>Eight billion people buy it anyway. They have bought it for four thousand years, with no marketing budget, no roadmap and no churn. Nobody has ever asked what it is for.</p>
+      <p>Sugar was also tokenised a long time ago. Raw sugar has traded on the New York exchange as Sugar&nbsp;No.&nbsp;11 for over a century, in lots of 112,000 pounds, under supervision. We are not the first people to put a ticker on it. We are only the first to admit there is nothing in the lot.</p>
+    </div>
+
+      <p class="allergen">Contains: sugar.<br>Does not contain: anything else.</p>
+      </div>
+
+      <figure class="fig fig--xt">
+        <svg class="draw draw--xt" viewBox="-96 -58 192 116" role="img" aria-label="A cluster of sucrose crystals, enlarged"><g transform="translate(-69.8 0.7) rotate(-7.6)"><path d="M-5.4 -9.6L0.0 -14.2L5.4 -11.4L5.4 11.4L0.0 14.2L-5.4 9.6Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-1.7 -10.8L-1.7 10.5M0.0 -14.2L-1.7 -10.8" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(-45.7 -19.3) rotate(-28.7)"><path d="M-8.4 -16.7L0.0 -27.0L8.4 -20.8L8.4 20.8L0.0 27.0L-8.4 16.7Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.7 -19.4L-2.7 18.8M0.0 -27.0L-2.7 -19.4" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(-44.5 24.1) rotate(-48.3)"><path d="M-7.4 -14.2L0.0 -21.9L7.4 -17.3L7.4 17.3L0.0 21.9L-7.4 14.2Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.4 -16.2L-2.4 15.8M0.0 -21.9L-2.4 -16.2" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(-7.5 -1.0) rotate(59.3)"><path d="M-6.8 -10.5L0.0 -17.0L6.8 -13.1L6.8 13.1L0.0 17.0L-6.8 10.5Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.2 -12.2L-2.2 11.8M0.0 -17.0L-2.2 -12.2" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(-18.9 21.5) rotate(-26.2)"><path d="M-7.6 -13.7L0.0 -23.7L7.6 -17.7L7.6 17.7L0.0 23.7L-7.6 13.7Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.4 -16.3L-2.4 15.7M0.0 -23.7L-2.4 -16.3" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(15.5 -19.8) rotate(18.8)"><path d="M-7.4 -13.2L0.0 -23.7L7.4 -17.4L7.4 17.4L0.0 23.7L-7.4 13.2Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.4 -16.0L-2.4 15.3M0.0 -23.7L-2.4 -16.0" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(16.7 9.4) rotate(-53.7)"><path d="M-6.4 -9.1L0.0 -15.6L6.4 -11.7L6.4 11.7L0.0 15.6L-6.4 9.1Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.1 -10.8L-2.1 10.4M0.0 -15.6L-2.1 -10.8" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(38.4 -5.4) rotate(26.4)"><path d="M-5.7 -12.6L0.0 -18.2L5.7 -14.8L5.7 14.8L0.0 18.2L-5.7 12.6Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-1.8 -14.0L-1.8 13.7M0.0 -18.2L-1.8 -14.0" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(46.4 27.1) rotate(-20.7)"><path d="M-6.0 -10.8L0.0 -19.7L6.0 -14.3L6.0 14.3L0.0 19.7L-6.0 10.8Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-1.9 -13.1L-1.9 12.6M0.0 -19.7L-1.9 -13.1" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(70.5 0.5) rotate(8.3)"><path d="M-5.2 -9.6L0.0 -16.4L5.2 -12.3L5.2 12.3L0.0 16.4L-5.2 9.6Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-1.7 -11.4L-1.7 10.9M0.0 -16.4L-1.7 -11.4" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(-68.4 -26.9) rotate(18.9)"><path d="M-9.0 -20.0L0.0 -29.5L9.0 -23.8L9.0 23.8L0.0 29.5L-9.0 20.0Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.9 -22.4L-2.9 21.9M0.0 -29.5L-2.9 -22.4" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g><g transform="translate(66.2 -24.4) rotate(-7.8)"><path d="M-7.5 -16.4L0.0 -24.9L7.5 -19.8L7.5 19.8L0.0 24.9L-7.5 16.4Z" fill="var(--stock-back)" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/><path d="M-2.4 -18.6L-2.4 18.1M0.0 -24.9L-2.4 -18.6" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/></g></svg>
+        <figcaption>Sucrose crystals. Enlarged to show texture.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="perf" aria-hidden="true"></div>
+
+<!-- ═══ NUTRITION INFORMATION (tokenomics) ═══════════════════════════════ -->
+<section class="sheet sheet--back" id="tokenomics" aria-label="Tokenomics, printed as a nutrition information panel">
+  <div class="wrap">
+    <p class="kicker">Per serving · per 100 g</p>
+    <h2 class="head">Every other token buries the risks in a PDF. Sugar is required by law to print them on the front.</h2>
+    <div class="head-rule"></div>
+
+    <div class="two">
+      <div class="panel">
+        <h3 class="panel__title">Nutrition information</h3>
+        <div style="height:10px;background:var(--ink);margin-bottom:6px"></div>
+        <div class="panel__serv"><span>Serving size</span><span>1 packet (4 g)</span></div>
+        <div class="panel__serv" style="border-bottom:5px solid var(--ink);padding-bottom:8px"><span>Servings per container</span><span>1,000,000,000</span></div>
+
+        <table>
+          <caption class="panel__dv" style="caption-side:top">% Daily Value*</caption>
+          <tbody>
+            <tr><th scope="row" class="lede">Energy</th><td class="n">0 kcal / 0 kJ</td></tr>
+            <tr><th scope="row" class="lede">Total Utility</th><td class="n">0 g&nbsp;&nbsp;&nbsp;0%</td></tr>
+            <tr><th scope="row" class="in1">of which governance</th><td class="n">0 g&nbsp;&nbsp;&nbsp;0%</td></tr>
+            <tr><th scope="row" class="in1">of which yield</th><td class="n">0 g&nbsp;&nbsp;&nbsp;0%</td></tr>
+            <tr><th scope="row" class="in1">of which roadmap</th><td class="n">0 g&nbsp;&nbsp;&nbsp;0%</td></tr>
+            <tr><th scope="row" class="lede">Protein</th><td class="n">0 g&nbsp;&nbsp;&nbsp;0%</td></tr>
+            <tr><th scope="row" class="lede">Total Carbohydrate</th><td class="n">100 g&nbsp;&nbsp;100%</td></tr>
+            <tr><th scope="row" class="in1">of which sugars</th><td class="n">100 g&nbsp;&nbsp;100%</td></tr>
+            <tr class="r5"><th scope="row" class="in2">of which added sugars</th><td class="n">100 g&nbsp;&nbsp;100%</td></tr>
+            <tr><th scope="row">Tax</th><td class="n">0%</td></tr>
+            <tr><th scope="row">Team allocation</th><td class="n">0 g&nbsp;&nbsp;&nbsp;0%</td></tr>
+            <tr class="none"><th scope="row">Supply</th><td class="n">1,000,000,000, fixed</td></tr>
+          </tbody>
+        </table>
+        <div style="height:5px;background:var(--ink);margin-top:8px"></div>
+
+        <p class="panel__note">* The % Daily Value states what a nutrient contributes to a daily diet. Nothing in this panel contributes to anything.</p>
+        <p class="panel__note">Not a significant source of utility, governance, yield or vitamin D.</p>
+      </div>
+
+      <div>
+        <div class="prose">
+          <p>Six teaspoons a day is what the World Health Organization would ideally like you to have. Twelve is what they settled for. Neither number has ever changed what anybody put in their coffee.</p>
+          <p>That is the whole thesis. Sugar is the most honestly labelled product in the shop and the least affected by its own label. We printed a ticker on it and changed nothing else.</p>
+        </div>
+
+        <div class="verify">
+          <p class="small">Do not take the label's word for it. Nobody takes a label's word for it.</p>
+          <div class="verify__links">
+            <!-- REPLACE_LINK solscan --><a href="#" rel="noopener">Solscan — contract</a>
+            <!-- REPLACE_LINK chart --><a href="#" rel="noopener">DexScreener — price</a>
+            <!-- REPLACE_LINK bubblemaps --><a href="#" rel="noopener">Bubblemaps — distribution</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="tape tape--dark" aria-hidden="true">
+  <div class="tape__run">
+    <div class="tape__seg">Grade ICUMSA 45 • Polarisation 99.8° min • Moisture 0.04% max • Colour: white • Odour: none • Solubility: total • Shelf life: indefinite • Churn since 2000 BC: 0% • Marketing spend: 0 • Tax: 0% • Stock: paper • Ink: 1 colour • In moderation •&nbsp;</div>
+    <div class="tape__seg">Grade ICUMSA 45 • Polarisation 99.8° min • Moisture 0.04% max • Colour: white • Odour: none • Solubility: total • Shelf life: indefinite • Churn since 2000 BC: 0% • Marketing spend: 0 • Tax: 0% • Stock: paper • Ink: 1 colour • In moderation •&nbsp;</div>
+  </div>
+</div>
+
+<!-- ═══ DIRECTIONS FOR USE (how to buy) ══════════════════════════════════ -->
+<section class="sheet sheet--back" id="how-to-buy" aria-label="How to buy">
+  <div class="wrap">
+    <p class="kicker">Directions for use</p>
+    <h2 class="head">Add to taste.</h2>
+    <div class="head-rule"></div>
+
+    <ol class="steps">
+      <li>
+        <span class="steps__n">01</span>
+        <div>
+          <h3>Get a wallet.</h3>
+          <p>Phantom, Solflare or Backpack. Free, about thirty seconds, no photograph of your face required. Write the recovery phrase down on paper — nobody can recover it for you, and nobody will try.</p>
+        </div>
+      </li>
+      <li>
+        <span class="steps__n">02</span>
+        <div>
+          <h3>Add SOL.</h3>
+          <p>Buy it on any exchange and send it to your wallet address, or buy it inside the wallet. Leave a little spare — the network charges a fraction of a cent per transaction and you need it.</p>
+        </div>
+      </li>
+      <li>
+        <span class="steps__n">03</span>
+        <div>
+          <h3>Swap.</h3>
+          <p>Open Jupiter or pump.fun, paste the lot number from the front of the pack, swap SOL for $SUGAR. Check the number character by character. Only use the one printed on this page or posted from our X account. Everything else is salt.</p>
+        </div>
+      </li>
+      <li>
+        <span class="steps__n">04</span>
+        <div>
+          <h3>Stir.</h3>
+          <p>There is no step five.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<div class="perf" aria-hidden="true"></div>
+
+<!-- ═══ WARNINGS (FAQ) ═══════════════════════════════════════════════════ -->
+<section class="sheet sheet--back" id="faq">
+  <div class="wrap">
+    <p class="kicker">Warnings</p>
+    <h2 class="head">Everything they say about sugar, they also say about this. Both times they are right.</h2>
+    <div class="head-rule"></div>
+
+    <div class="warnbox">
+      <div class="warnbox__bar">Warnings</div>
+      <dl>
+        <dt>High in sugars.</dt>
+        <dd>The only thing in the bag is the thing on the label.</dd>
+        <dt>No nutritional value.</dt>
+        <dd>This is printed on the real product too. We did not add it.</dd>
+        <dt>May cause a crash.</dt>
+        <dd>Blood glucose rises, then settles below where it started. That is well documented and it is not a metaphor we invented.</dd>
+        <dt>Not suitable for everyone.</dt>
+        <dd>It is a token about sugar.</dd>
+        <dt>Keep dry.</dt>
+        <dd>Sugar keeps for a hundred years in a bag and disappears in one second in water. Choose the container carefully.</dd>
+      </dl>
+    </div>
+
+    <div class="qa">
+      <p class="kicker" style="margin-bottom:0">Questions or comments?</p>
+      <dl>
+        <dt>Q. Is it safe?</dt>
+        <dd>A. In moderation.</dd>
+        <dt>Q. What is the utility?</dt>
+        <dd>A. See the panel. It is printed as 0 g.</dd>
+        <dt>Q. Who is behind it?</dt>
+        <dd>A. Nobody you have heard of. Sugar does not have a founder either.</dd>
+        <dt>Q. Why sugar?</dt>
+        <dd>A. Four thousand years of demand, eight billion users, no marketing budget, no utility, and nobody has ever stopped. We did not build anything. We printed a ticker on something that already worked.</dd>
+        <dt>Q. Is this a joke?</dt>
+        <dd>A. It is a sugar packet with a contract address on it.</dd>
+      </dl>
+    </div>
+
+    <p class="close-line">You have known sugar was bad for you for forty years. Look in your kitchen.</p>
+  </div>
+</section>
+
+<!-- ═══ BASE OF PACK ═════════════════════════════════════════════════════ -->
+<footer class="sheet sheet--kraft base">
+  <div class="wrap">
+    <div class="base__grid">
+      <div>
+        <div class="base__block">
+          <h4>Distributed by</h4>
+          <div class="base__links">
+            <!-- REPLACE_LINK x --><a href="#" rel="noopener">X</a>
+            <!-- REPLACE_LINK telegram --><a href="#" rel="noopener">Telegram</a>
+          </div>
+        </div>
+
+        <div class="base__block">
+          <h4>Lot no.</h4>
+          <div class="lot__row">
+            <!-- REPLACE_CONTRACT (2 of 2) -->
+            <code class="lot__val" id="ca2" style="background:transparent">REPLACE_CONTRACT_ADDRESS_HERE</code>
+            <button class="btn" type="button" data-copy="#ca2">Copy</button>
+          </div>
+        </div>
+
+        <div class="base__block">
+          <h4>Declaration</h4>
+          <p class="small">
+            Net wt. 1,000,000,000 packets ℮<br>
+            Packed in: a browser<br>
+            Best before: never<br>
+            Pure sugar does not expire. That is a fact about jam, not a promise about price.
+          </p>
+        </div>
+
+        <div class="cta-row">
+          <!-- REPLACE_LINK buy --><a class="btn btn--solid" href="#" rel="noopener">Add sugar</a>
+          <!-- REPLACE_LINK chart --><a class="btn" href="#" rel="noopener">Chart</a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Not scannable</h4>
+        <svg class="barcode" viewBox="0 0 300 66" role="img" aria-label="Decorative barcode">
+          <g fill="#141210">
+            <rect x="0" y="0" width="2" height="52"/><rect x="5" y="0" width="1" height="52"/><rect x="9" y="0" width="4" height="52"/>
+            <rect x="16" y="0" width="1" height="52"/><rect x="20" y="0" width="3" height="52"/><rect x="27" y="0" width="2" height="52"/>
+            <rect x="33" y="0" width="1" height="52"/><rect x="37" y="0" width="5" height="52"/><rect x="46" y="0" width="2" height="52"/>
+            <rect x="52" y="0" width="1" height="52"/><rect x="56" y="0" width="3" height="52"/><rect x="63" y="0" width="1" height="52"/>
+            <rect x="67" y="0" width="4" height="52"/><rect x="75" y="0" width="2" height="52"/><rect x="81" y="0" width="1" height="52"/>
+            <rect x="85" y="0" width="2" height="52"/><rect x="91" y="0" width="4" height="52"/><rect x="99" y="0" width="1" height="52"/>
+            <rect x="103" y="0" width="3" height="52"/><rect x="110" y="0" width="2" height="52"/><rect x="116" y="0" width="1" height="52"/>
+            <rect x="120" y="0" width="4" height="52"/><rect x="128" y="0" width="2" height="52"/><rect x="134" y="0" width="1" height="52"/>
+            <rect x="138" y="0" width="3" height="52"/><rect x="145" y="0" width="1" height="52"/><rect x="149" y="0" width="5" height="52"/>
+            <rect x="158" y="0" width="2" height="52"/><rect x="164" y="0" width="1" height="52"/><rect x="168" y="0" width="3" height="52"/>
+            <rect x="175" y="0" width="2" height="52"/><rect x="181" y="0" width="1" height="52"/><rect x="185" y="0" width="4" height="52"/>
+            <rect x="193" y="0" width="1" height="52"/><rect x="197" y="0" width="2" height="52"/><rect x="203" y="0" width="3" height="52"/>
+            <rect x="210" y="0" width="1" height="52"/><rect x="214" y="0" width="4" height="52"/><rect x="222" y="0" width="2" height="52"/>
+            <rect x="228" y="0" width="1" height="52"/><rect x="232" y="0" width="3" height="52"/><rect x="239" y="0" width="2" height="52"/>
+            <rect x="245" y="0" width="1" height="52"/><rect x="249" y="0" width="5" height="52"/><rect x="258" y="0" width="2" height="52"/>
+            <rect x="264" y="0" width="1" height="52"/><rect x="268" y="0" width="3" height="52"/><rect x="275" y="0" width="2" height="52"/>
+            <rect x="281" y="0" width="1" height="52"/><rect x="285" y="0" width="4" height="52"/><rect x="293" y="0" width="2" height="52"/>
+            <rect x="298" y="0" width="2" height="52"/>
+          </g>
+          <text x="0" y="63" font-family="Sometype Mono, monospace" font-size="8" letter-spacing="1.6" fill="#6A6459">1 PACKET = 1 PACKET</text>
+        </svg>
+
+        <div class="fact">
+          <h4>Fun fact №1</h4>
+          <div class="fact__row">
+            <figure class="fig fig--loaf">
+              <svg class="draw draw--loaf" viewBox="-56 -166 112 194" role="img" aria-label="A conical sugar loaf"><g fill="currentColor"><circle cx="-0.1" cy="-140.3" r="1.49"/><circle cx="-2.9" cy="-136.9" r="1.54"/><circle cx="3.1" cy="-136.9" r="1.50"/><circle cx="-0.2" cy="-133.4" r="1.51"/><circle cx="-3.1" cy="-130.3" r="1.56"/><circle cx="-6.4" cy="-127.0" r="1.48"/><circle cx="-10.0" cy="-123.7" r="1.41"/><circle cx="3.1" cy="-130.2" r="1.43"/><circle cx="-0.2" cy="-126.8" r="1.42"/><circle cx="-3.4" cy="-123.7" r="1.39"/><circle cx="-6.5" cy="-120.5" r="1.41"/><circle cx="-9.6" cy="-117.2" r="1.57"/><circle cx="-12.9" cy="-114.2" r="1.33"/><circle cx="6.6" cy="-127.2" r="1.55"/><circle cx="3.0" cy="-124.0" r="1.57"/><circle cx="-0.1" cy="-120.6" r="1.51"/><circle cx="-3.3" cy="-117.6" r="1.43"/><circle cx="-6.3" cy="-113.7" r="1.44"/><circle cx="-9.7" cy="-110.6" r="1.44"/><circle cx="-12.9" cy="-107.6" r="1.45"/><circle cx="-16.1" cy="-104.5" r="1.46"/><circle cx="9.9" cy="-123.9" r="1.62"/><circle cx="6.4" cy="-120.4" r="1.70"/><circle cx="3.4" cy="-117.5" r="1.45"/><circle cx="0.1" cy="-114.2" r="1.61"/><circle cx="-3.0" cy="-110.7" r="1.65"/><circle cx="-6.2" cy="-107.8" r="1.62"/><circle cx="-10.0" cy="-104.3" r="1.36"/><circle cx="-13.2" cy="-101.3" r="1.39"/><circle cx="-16.4" cy="-97.9" r="1.26"/><circle cx="-19.8" cy="-94.2" r="1.35"/><circle cx="-22.8" cy="-90.9" r="1.20"/><circle cx="9.8" cy="-117.1" r="1.51"/><circle cx="6.2" cy="-114.3" r="1.68"/><circle cx="3.4" cy="-110.6" r="1.43"/><circle cx="0.3" cy="-107.6" r="1.49"/><circle cx="-3.0" cy="-104.3" r="1.45"/><circle cx="-6.4" cy="-101.3" r="1.46"/><circle cx="-9.6" cy="-98.0" r="1.55"/><circle cx="-13.1" cy="-94.8" r="1.32"/><circle cx="-16.1" cy="-91.3" r="1.35"/><circle cx="-19.6" cy="-88.2" r="1.21"/><circle cx="-22.8" cy="-84.7" r="1.27"/><circle cx="13.1" cy="-113.8" r="1.83"/><circle cx="9.6" cy="-111.0" r="1.55"/><circle cx="6.8" cy="-107.3" r="1.66"/><circle cx="3.0" cy="-104.0" r="1.47"/><circle cx="0.1" cy="-100.9" r="1.47"/><circle cx="-3.4" cy="-98.0" r="1.55"/><circle cx="-6.5" cy="-94.2" r="1.44"/><circle cx="-9.5" cy="-91.5" r="1.42"/><circle cx="-13.1" cy="-88.2" r="1.27"/><circle cx="-16.5" cy="-85.0" r="1.29"/><circle cx="-19.5" cy="-81.7" r="1.22"/><circle cx="-22.8" cy="-78.5" r="1.23"/><circle cx="-25.7" cy="-75.2" r="1.26"/><circle cx="13.3" cy="-107.2" r="1.84"/><circle cx="9.5" cy="-104.6" r="1.78"/><circle cx="6.4" cy="-100.8" r="1.59"/><circle cx="2.9" cy="-97.7" r="1.54"/><circle cx="-0.2" cy="-94.3" r="1.45"/><circle cx="-2.9" cy="-90.9" r="1.63"/><circle cx="-6.2" cy="-87.9" r="1.38"/><circle cx="-9.8" cy="-85.1" r="1.36"/><circle cx="-13.2" cy="-81.3" r="1.50"/><circle cx="-16.5" cy="-78.0" r="1.31"/><circle cx="-19.3" cy="-75.1" r="1.30"/><circle cx="-22.5" cy="-72.0" r="1.34"/><circle cx="-25.9" cy="-68.2" r="1.33"/><circle cx="-29.3" cy="-65.6" r="1.18"/><circle cx="16.2" cy="-104.4" r="1.85"/><circle cx="12.8" cy="-101.0" r="1.53"/><circle cx="10.0" cy="-98.1" r="1.75"/><circle cx="6.7" cy="-94.3" r="1.54"/><circle cx="3.1" cy="-91.5" r="1.56"/><circle cx="-0.3" cy="-88.3" r="1.58"/><circle cx="-3.6" cy="-84.9" r="1.39"/><circle cx="-6.5" cy="-81.4" r="1.41"/><circle cx="-9.5" cy="-78.1" r="1.53"/><circle cx="-13.3" cy="-74.7" r="1.26"/><circle cx="-16.3" cy="-71.5" r="1.34"/><circle cx="-19.2" cy="-68.5" r="1.24"/><circle cx="-22.5" cy="-65.5" r="1.32"/><circle cx="-26.1" cy="-62.0" r="1.19"/><circle cx="-29.6" cy="-58.8" r="1.15"/><circle cx="-32.3" cy="-55.2" r="1.15"/><circle cx="16.0" cy="-97.9" r="1.85"/><circle cx="13.0" cy="-94.4" r="1.64"/><circle cx="9.6" cy="-91.5" r="1.55"/><circle cx="6.8" cy="-88.3" r="1.71"/><circle cx="3.1" cy="-84.6" r="1.56"/><circle cx="0.0" cy="-81.4" r="1.62"/><circle cx="-3.1" cy="-78.2" r="1.42"/><circle cx="-6.8" cy="-74.9" r="1.34"/><circle cx="-9.6" cy="-71.5" r="1.58"/><circle cx="-13.1" cy="-68.3" r="1.37"/><circle cx="-16.0" cy="-65.4" r="1.49"/><circle cx="-19.2" cy="-62.1" r="1.28"/><circle cx="-23.0" cy="-58.8" r="1.23"/><circle cx="-25.8" cy="-55.2" r="1.30"/><circle cx="-29.2" cy="-52.5" r="1.08"/><circle cx="-32.6" cy="-48.9" r="1.01"/><circle cx="19.5" cy="-94.8" r="1.73"/><circle cx="16.6" cy="-91.5" r="1.65"/><circle cx="13.1" cy="-87.9" r="1.76"/><circle cx="9.9" cy="-84.7" r="1.71"/><circle cx="6.4" cy="-81.2" r="1.64"/><circle cx="3.2" cy="-78.1" r="1.54"/><circle cx="0.2" cy="-74.8" r="1.47"/><circle cx="-3.6" cy="-71.6" r="1.45"/><circle cx="-6.8" cy="-68.4" r="1.40"/><circle cx="-9.9" cy="-65.1" r="1.33"/><circle cx="-13.2" cy="-61.7" r="1.44"/><circle cx="-16.5" cy="-59.1" r="1.38"/><circle cx="-19.5" cy="-55.3" r="1.39"/><circle cx="-22.5" cy="-52.2" r="1.29"/><circle cx="-25.9" cy="-48.8" r="1.14"/><circle cx="-29.0" cy="-45.4" r="1.29"/><circle cx="-32.6" cy="-42.2" r="1.17"/><circle cx="-35.9" cy="-39.0" r="1.09"/><circle cx="19.3" cy="-88.1" r="1.63"/><circle cx="16.2" cy="-84.6" r="1.77"/><circle cx="12.7" cy="-81.6" r="1.62"/><circle cx="9.5" cy="-78.2" r="1.65"/><circle cx="6.6" cy="-75.1" r="1.64"/><circle cx="3.4" cy="-71.7" r="1.69"/><circle cx="0.2" cy="-68.2" r="1.44"/><circle cx="-3.3" cy="-65.5" r="1.41"/><circle cx="-6.8" cy="-61.7" r="1.48"/><circle cx="-9.5" cy="-58.7" r="1.52"/><circle cx="-13.3" cy="-55.8" r="1.47"/><circle cx="-16.1" cy="-52.5" r="1.26"/><circle cx="-19.2" cy="-49.1" r="1.21"/><circle cx="-22.9" cy="-45.5" r="1.35"/><circle cx="-26.3" cy="-42.2" r="1.32"/><circle cx="-29.4" cy="-39.5" r="1.28"/><circle cx="-32.5" cy="-36.3" r="1.15"/><circle cx="-35.6" cy="-32.5" r="1.06"/><circle cx="22.9" cy="-84.8" r="1.79"/><circle cx="19.3" cy="-81.8" r="1.72"/><circle cx="16.1" cy="-78.4" r="1.84"/><circle cx="13.0" cy="-75.0" r="1.83"/><circle cx="9.6" cy="-71.6" r="1.71"/><circle cx="6.2" cy="-68.3" r="1.69"/><circle cx="3.5" cy="-64.9" r="1.53"/><circle cx="0.2" cy="-61.7" r="1.50"/><circle cx="-3.2" cy="-58.7" r="1.37"/><circle cx="-6.8" cy="-55.3" r="1.44"/><circle cx="-9.8" cy="-51.9" r="1.44"/><circle cx="-12.8" cy="-48.8" r="1.48"/><circle cx="-16.4" cy="-46.0" r="1.35"/><circle cx="-19.4" cy="-42.6" r="1.34"/><circle cx="-22.4" cy="-39.5" r="1.19"/><circle cx="-25.7" cy="-35.9" r="1.29"/><circle cx="-29.6" cy="-32.9" r="1.22"/><circle cx="-32.7" cy="-29.6" r="1.06"/><circle cx="-35.7" cy="-26.4" r="1.12"/><circle cx="25.7" cy="-81.6" r="1.70"/><circle cx="22.8" cy="-78.2" r="1.89"/><circle cx="19.8" cy="-74.9" r="1.92"/><circle cx="16.2" cy="-71.7" r="1.83"/><circle cx="12.9" cy="-68.5" r="1.83"/><circle cx="10.0" cy="-65.5" r="1.76"/><circle cx="6.8" cy="-62.0" r="1.64"/><circle cx="3.0" cy="-58.8" r="1.60"/><circle cx="-0.2" cy="-55.2" r="1.58"/><circle cx="-3.2" cy="-52.6" r="1.49"/><circle cx="-6.5" cy="-48.9" r="1.44"/><circle cx="-9.8" cy="-45.6" r="1.47"/><circle cx="-13.0" cy="-42.5" r="1.36"/><circle cx="-16.0" cy="-38.9" r="1.24"/><circle cx="-19.4" cy="-36.2" r="1.44"/><circle cx="-22.8" cy="-33.0" r="1.19"/><circle cx="-26.3" cy="-29.5" r="1.28"/><circle cx="-29.4" cy="-26.0" r="1.18"/><circle cx="-32.2" cy="-23.0" r="1.16"/><circle cx="-36.0" cy="-19.7" r="1.12"/><circle cx="-38.8" cy="-16.1" r="0.95"/><circle cx="26.1" cy="-74.9" r="1.67"/><circle cx="22.5" cy="-71.7" r="1.79"/><circle cx="19.8" cy="-68.6" r="1.84"/><circle cx="16.1" cy="-65.4" r="1.87"/><circle cx="12.7" cy="-61.8" r="1.68"/><circle cx="10.0" cy="-58.9" r="1.54"/><circle cx="6.5" cy="-55.2" r="1.65"/><circle cx="3.4" cy="-52.5" r="1.56"/><circle cx="0.1" cy="-49.3" r="1.53"/><circle cx="-3.1" cy="-45.8" r="1.62"/><circle cx="-6.3" cy="-42.3" r="1.60"/><circle cx="-9.5" cy="-39.1" r="1.40"/><circle cx="-13.2" cy="-35.7" r="1.32"/><circle cx="-16.5" cy="-32.5" r="1.44"/><circle cx="-19.3" cy="-29.4" r="1.33"/><circle cx="-22.6" cy="-25.9" r="1.19"/><circle cx="-25.7" cy="-22.7" r="1.33"/><circle cx="-29.3" cy="-19.8" r="1.15"/><circle cx="-32.8" cy="-16.7" r="1.07"/><circle cx="-36.1" cy="-13.1" r="1.00"/><circle cx="-38.9" cy="-10.2" r="1.01"/><circle cx="26.0" cy="-68.5" r="1.96"/><circle cx="22.8" cy="-65.1" r="1.67"/><circle cx="19.8" cy="-62.2" r="1.87"/><circle cx="16.3" cy="-58.8" r="1.86"/><circle cx="12.7" cy="-55.5" r="1.54"/><circle cx="9.9" cy="-52.3" r="1.81"/><circle cx="6.3" cy="-49.1" r="1.50"/><circle cx="2.9" cy="-46.1" r="1.45"/><circle cx="-0.2" cy="-42.4" r="1.63"/><circle cx="-3.2" cy="-39.0" r="1.55"/><circle cx="-6.5" cy="-36.1" r="1.43"/><circle cx="-10.0" cy="-32.4" r="1.42"/><circle cx="-13.1" cy="-29.6" r="1.26"/><circle cx="-16.2" cy="-26.0" r="1.42"/><circle cx="-19.5" cy="-22.7" r="1.35"/><circle cx="-22.4" cy="-20.0" r="1.22"/><circle cx="-25.9" cy="-16.3" r="1.17"/><circle cx="-29.5" cy="-12.9" r="1.21"/><circle cx="-32.3" cy="-10.2" r="1.14"/><circle cx="-36.0" cy="-6.7" r="0.99"/><circle cx="-39.2" cy="-3.6" r="1.01"/><circle cx="29.1" cy="-65.4" r="1.79"/><circle cx="26.0" cy="-62.1" r="1.99"/><circle cx="22.8" cy="-58.8" r="1.79"/><circle cx="19.8" cy="-55.2" r="1.71"/><circle cx="16.1" cy="-52.4" r="1.87"/><circle cx="13.2" cy="-49.0" r="1.62"/><circle cx="9.4" cy="-45.4" r="1.59"/><circle cx="6.8" cy="-42.3" r="1.73"/><circle cx="3.5" cy="-39.2" r="1.72"/><circle cx="0.1" cy="-35.8" r="1.41"/><circle cx="-3.0" cy="-32.9" r="1.47"/><circle cx="-6.8" cy="-29.7" r="1.34"/><circle cx="-9.8" cy="-26.3" r="1.48"/><circle cx="-12.7" cy="-22.9" r="1.43"/><circle cx="-16.4" cy="-19.7" r="1.29"/><circle cx="-19.3" cy="-16.7" r="1.44"/><circle cx="-22.6" cy="-13.1" r="1.17"/><circle cx="-25.8" cy="-9.9" r="1.15"/><circle cx="-29.1" cy="-6.4" r="1.14"/><circle cx="-32.4" cy="-3.1" r="1.08"/><circle cx="29.0" cy="-58.8" r="1.91"/><circle cx="26.1" cy="-55.5" r="1.94"/><circle cx="22.6" cy="-52.3" r="1.66"/><circle cx="19.7" cy="-48.8" r="1.60"/><circle cx="16.0" cy="-45.5" r="1.75"/><circle cx="13.3" cy="-42.6" r="1.57"/><circle cx="9.6" cy="-39.4" r="1.79"/><circle cx="6.8" cy="-36.0" r="1.79"/><circle cx="3.0" cy="-32.9" r="1.51"/><circle cx="-0.3" cy="-29.7" r="1.51"/><circle cx="-3.3" cy="-26.1" r="1.44"/><circle cx="-6.6" cy="-23.1" r="1.37"/><circle cx="-10.1" cy="-19.9" r="1.36"/><circle cx="-13.2" cy="-16.2" r="1.33"/><circle cx="-16.0" cy="-13.3" r="1.26"/><circle cx="-19.3" cy="-10.2" r="1.43"/><circle cx="-22.7" cy="-6.8" r="1.19"/><circle cx="-26.2" cy="-3.4" r="1.28"/><circle cx="32.7" cy="-55.8" r="1.84"/><circle cx="29.2" cy="-52.4" r="1.98"/><circle cx="26.3" cy="-49.3" r="1.84"/><circle cx="22.8" cy="-45.4" r="1.92"/><circle cx="19.2" cy="-42.6" r="1.91"/><circle cx="16.1" cy="-39.2" r="1.80"/><circle cx="13.1" cy="-36.1" r="1.58"/><circle cx="9.5" cy="-32.6" r="1.72"/><circle cx="6.2" cy="-29.6" r="1.49"/><circle cx="2.9" cy="-25.9" r="1.45"/><circle cx="0.0" cy="-22.9" r="1.48"/><circle cx="-3.1" cy="-19.8" r="1.65"/><circle cx="-6.7" cy="-16.7" r="1.47"/><circle cx="-9.8" cy="-13.1" r="1.48"/><circle cx="-12.9" cy="-9.9" r="1.48"/><circle cx="-16.0" cy="-6.9" r="1.22"/><circle cx="-19.7" cy="-3.7" r="1.24"/><circle cx="32.3" cy="-48.9" r="1.81"/><circle cx="29.3" cy="-45.8" r="2.03"/><circle cx="26.4" cy="-42.5" r="1.65"/><circle cx="22.9" cy="-39.5" r="1.74"/><circle cx="19.8" cy="-36.1" r="1.82"/><circle cx="16.4" cy="-32.6" r="1.86"/><circle cx="13.1" cy="-29.2" r="1.73"/><circle cx="10.1" cy="-26.0" r="1.59"/><circle cx="6.2" cy="-22.7" r="1.55"/><circle cx="3.2" cy="-19.5" r="1.56"/><circle cx="-0.2" cy="-16.6" r="1.58"/><circle cx="-2.9" cy="-13.5" r="1.47"/><circle cx="-6.8" cy="-10.1" r="1.56"/><circle cx="-9.5" cy="-6.6" r="1.53"/><circle cx="-12.8" cy="-3.7" r="1.33"/><circle cx="32.8" cy="-42.3" r="1.95"/><circle cx="29.0" cy="-39.6" r="1.96"/><circle cx="25.9" cy="-35.7" r="1.99"/><circle cx="22.9" cy="-33.0" r="1.79"/><circle cx="19.8" cy="-29.5" r="1.72"/><circle cx="16.2" cy="-26.1" r="1.89"/><circle cx="12.9" cy="-22.9" r="1.68"/><circle cx="9.5" cy="-19.5" r="1.67"/><circle cx="6.2" cy="-16.6" r="1.70"/><circle cx="3.6" cy="-13.1" r="1.75"/><circle cx="0.3" cy="-9.8" r="1.57"/><circle cx="-3.0" cy="-6.8" r="1.48"/><circle cx="-6.4" cy="-3.5" r="1.36"/><circle cx="35.7" cy="-39.0" r="1.79"/><circle cx="32.7" cy="-36.1" r="1.99"/><circle cx="29.6" cy="-32.7" r="1.68"/><circle cx="25.8" cy="-29.4" r="1.83"/><circle cx="22.6" cy="-26.0" r="1.93"/><circle cx="19.2" cy="-23.1" r="1.89"/><circle cx="16.1" cy="-20.0" r="1.59"/><circle cx="13.0" cy="-16.7" r="1.57"/><circle cx="9.9" cy="-13.1" r="1.57"/><circle cx="6.4" cy="-9.7" r="1.68"/><circle cx="3.2" cy="-7.0" r="1.60"/><circle cx="0.1" cy="-3.2" r="1.46"/><circle cx="35.5" cy="-32.8" r="2.07"/><circle cx="32.3" cy="-29.2" r="1.79"/><circle cx="29.2" cy="-26.4" r="1.73"/><circle cx="25.9" cy="-23.1" r="1.72"/><circle cx="22.9" cy="-19.9" r="1.63"/><circle cx="19.2" cy="-16.2" r="1.68"/><circle cx="16.3" cy="-13.2" r="1.84"/><circle cx="13.3" cy="-10.2" r="1.68"/><circle cx="9.9" cy="-6.9" r="1.59"/><circle cx="6.4" cy="-3.3" r="1.75"/><circle cx="35.6" cy="-25.9" r="2.03"/><circle cx="32.3" cy="-22.9" r="1.78"/><circle cx="29.4" cy="-19.6" r="1.95"/><circle cx="26.0" cy="-16.8" r="1.98"/><circle cx="22.5" cy="-13.3" r="1.94"/><circle cx="19.3" cy="-9.6" r="1.74"/><circle cx="16.6" cy="-6.9" r="1.73"/><circle cx="12.9" cy="-3.8" r="1.55"/><circle cx="35.5" cy="-19.6" r="2.09"/><circle cx="32.3" cy="-16.7" r="1.84"/><circle cx="29.1" cy="-12.9" r="1.73"/><circle cx="26.0" cy="-9.8" r="1.79"/><circle cx="22.5" cy="-6.5" r="1.91"/><circle cx="19.2" cy="-3.7" r="1.89"/><circle cx="39.3" cy="-16.4" r="2.04"/><circle cx="35.6" cy="-13.1" r="1.72"/><circle cx="32.6" cy="-9.8" r="1.95"/><circle cx="29.2" cy="-6.7" r="1.96"/><circle cx="26.2" cy="-3.6" r="1.93"/><circle cx="39.1" cy="-9.9" r="2.13"/><circle cx="35.5" cy="-6.4" r="1.84"/><circle cx="32.5" cy="-3.5" r="1.76"/><circle cx="38.8" cy="-3.3" r="1.97"/></g><path d="M-42.0 0Q-26.0 -82.5 0 -150.0Q26.0 -82.5 42.0 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="0" cy="0" rx="42.0" ry="7.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M-30 -104L30 -104" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 4" opacity=".55"/></svg>
+              <figcaption>Loaf, pre-1843</figcaption>
+            </figure>
+            <p>The sugar cube was invented in 1843 in Dačice, Moravia, by a refinery manager called Jakub Kryštof Rad — after, the story goes, his wife cut her hand chipping at a solid cone of sugar. Before 1843, getting sugar out of the house supply required a hammer. Now it requires a wallet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="small legal">
+      $SUGAR is a meme token. It has no intrinsic value, no utility and no expectation of financial return. There is no team, no roadmap and no product. Nothing on this page is financial advice or an offer of anything. Raw sugar has traded as Sugar No. 11 on ICE Futures U.S. for over a century — that is a real market and this is not it. Not affiliated with, endorsed by or connected to any food producer, brand, refinery or exchange. The barcode above encodes nothing. Every mark on this page was drawn in a browser. Do not spend money you would mind losing.
+    </p>
+
+    <p class="stamp">In moderation.</p>
+  </div>
+</footer>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var rm = document.documentElement.classList.contains('rm');
+
+  /* ── copy: reads the address out of the DOM, so there is exactly one
+        source of truth and the printed value can never drift ────────── */
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    var field = document.querySelector(btn.getAttribute('data-copy'));
+    if (!field) return;
+    var label = btn.textContent;
+    btn.addEventListener('click', function () {
+      var text = field.textContent.trim();
+      var done = function () {
+        btn.textContent = 'Sweet.';
+        field.classList.add('is-copied');
+        setTimeout(function () {
+          btn.textContent = label;
+          field.classList.remove('is-copied');
+        }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:absolute;left:-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { /* nothing to say */ }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* ── tap before opening: the one toy. counts this device only, and
+        says so, because a fabricated global number is the one thing
+        this page cannot afford ───────────────────────────────────────── */
+  var front = document.getElementById('front');
+  var out = document.getElementById('tapn');
+  if (front && out) {
+    var n = 0;
+    try { n = parseInt(localStorage.getItem('sugar.taps'), 10) || 0; } catch (e) { n = 0; }
+    out.textContent = n.toLocaleString('en-US');
+    var last = 0;
+    front.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('a,button,code,input')) return;
+      var t = e.timeStamp || 0;
+      if (t - last < 200) return;
+      last = t;
+      n++;
+      out.textContent = n.toLocaleString('en-US');
+      try { localStorage.setItem('sugar.taps', String(n)); } catch (err) { /* private window */ }
+      if (rm) return;
+      document.body.classList.remove('jolt');
+      void document.body.offsetWidth;
+      document.body.classList.add('jolt');
+    });
+    document.body.addEventListener('animationend', function (e) {
+      if (e.animationName === 'jolt') document.body.classList.remove('jolt');
+    });
+  }
+
+  /* ── the head rules sweep in. that is the entire observer's job, and
+        if it never runs the rules are simply already drawn ───────────── */
+  if (rm || !('IntersectionObserver' in window)) {
+    document.querySelectorAll('.head-rule').forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      io.unobserve(en.target);
+      en.target.classList.add('in');
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  document.querySelectorAll('.head-rule').forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>
