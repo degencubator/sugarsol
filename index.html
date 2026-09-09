@@ -8,15 +8,15 @@
   ============================================================================
   $SUGAR — single-file landing page. No build step. Edit and open.
 
-  BEFORE YOU SHIP, REPLACE THESE (each appears in the HTML, not in JS):
-    1. CONTRACT ADDRESS  — search for  REPLACE_CONTRACT
-       appears twice: front-of-pack LOT NO. and base-of-pack LOT NO.
-       (the copy button reads the address out of the DOM, so no third copy)
-    2. LINKS             — search for  REPLACE_LINK
-       buy (Jupiter/pump.fun), chart (DexScreener), Solscan
-       (X is already wired to https://x.com/sugar_memetoken)
-    3. og:url / og:image — already set to https://sugarsol.fun (og.png ships beside this file)
-    4. SUPPLY            — search for  1,000,000,000  if your mint differs
+  LIVE. Everything below is wired and verified against the chain:
+    mint    AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump  (SUGAR, pump.fun)
+    supply  1,000,000,000 — confirmed via getTokenSupply, matches the panel
+    links   pump.fun / DexScreener / Solscan / Bubblemaps, all built on the mint
+    X       https://x.com/sugar_memetoken
+    og      https://sugarsol.fun + og.png beside this file
+
+  The copy button reads the address out of the DOM, so the printed value and
+  the copied value cannot drift apart. Change it in the two LOT NO. blocks.
 
   Every number printed here is either real or 0. Do not add one that is not.
   ============================================================================
@@ -379,7 +379,6 @@ h2.head{
 <header class="reel">
   <div class="wrap reel__bar">
     <span>$SUGAR — Solana</span>
-    <!-- REPLACE_LINK buy -->
     <a href="#buy">Add sugar ↗</a>
   </div>
 </header>
@@ -410,10 +409,8 @@ h2.head{
         <p class="thesis">Everybody loves sugar. We just printed a ticker on it.</p>
 
         <div class="cta-row front__cta" id="buy">
-      <!-- REPLACE_LINK buy: Jupiter or pump.fun swap URL -->
-          <a class="btn btn--solid" href="#" rel="noopener">Add sugar</a>
-          <!-- REPLACE_LINK chart: DexScreener -->
-          <a class="btn" href="#" rel="noopener">Chart</a>
+          <a class="btn btn--solid" href="https://pump.fun/coin/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">Add sugar</a>
+          <a class="btn" href="https://dexscreener.com/solana/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">Chart</a>
           <a class="btn" href="https://x.com/sugar_memetoken" target="_blank" rel="noopener">X</a>
         </div>
       </div>
@@ -427,8 +424,7 @@ h2.head{
     <div class="lot">
       <div class="lot__label">Lot no.</div>
       <div class="lot__row">
-        <!-- REPLACE_CONTRACT (1 of 2) -->
-        <code class="lot__val" id="ca">REPLACE_CONTRACT_ADDRESS_HERE</code>
+        <code class="lot__val" id="ca">AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump</code>
         <button class="btn" type="button" data-copy="#ca">Copy</button>
       </div>
       <p class="small lot__warn">Salt looks exactly like sugar. Read the label — every character.</p>
@@ -521,9 +517,9 @@ h2.head{
         <div class="verify">
           <p class="small">Do not take the label's word for it. Nobody takes a label's word for it.</p>
           <div class="verify__links">
-            <!-- REPLACE_LINK solscan --><a href="#" rel="noopener">Solscan — contract</a>
-            <!-- REPLACE_LINK chart --><a href="#" rel="noopener">DexScreener — price</a>
-            <!-- REPLACE_LINK bubblemaps --><a href="#" rel="noopener">Bubblemaps — distribution</a>
+            <a href="https://solscan.io/token/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">Solscan — contract</a>
+            <a href="https://dexscreener.com/solana/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">DexScreener — price</a>
+            <a href="https://bubblemaps.io/sol/token/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">Bubblemaps — distribution</a>
           </div>
         </div>
       </div>
@@ -637,8 +633,7 @@ h2.head{
         <div class="base__block">
           <h4>Lot no.</h4>
           <div class="lot__row">
-            <!-- REPLACE_CONTRACT (2 of 2) -->
-            <code class="lot__val" id="ca2" style="background:transparent">REPLACE_CONTRACT_ADDRESS_HERE</code>
+            <code class="lot__val" id="ca2" style="background:transparent">AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump</code>
             <button class="btn" type="button" data-copy="#ca2">Copy</button>
           </div>
         </div>
@@ -654,8 +649,8 @@ h2.head{
         </div>
 
         <div class="cta-row">
-          <!-- REPLACE_LINK buy --><a class="btn btn--solid" href="#" rel="noopener">Add sugar</a>
-          <!-- REPLACE_LINK chart --><a class="btn" href="#" rel="noopener">Chart</a>
+          <a class="btn btn--solid" href="https://pump.fun/coin/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">Add sugar</a>
+          <a class="btn" href="https://dexscreener.com/solana/AqZSLRg9uMVAREFQCEyy37wCJmQ7T4QYjJUURSmbpump" target="_blank" rel="noopener">Chart</a>
         </div>
       </div>
 
