@@ -13,7 +13,8 @@
        appears twice: front-of-pack LOT NO. and base-of-pack LOT NO.
        (the copy button reads the address out of the DOM, so no third copy)
     2. LINKS             — search for  REPLACE_LINK
-       buy (Jupiter/pump.fun), chart (DexScreener), X, Telegram, Solscan
+       buy (Jupiter/pump.fun), chart (DexScreener), Solscan
+       (X is already wired to https://x.com/sugar_memetoken)
     3. og:url / og:image — already set to https://sugarsol.fun (og.png ships beside this file)
     4. SUPPLY            — search for  1,000,000,000  if your mint differs
 
@@ -32,6 +33,8 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@sugar_memetoken">
+<meta name="twitter:creator" content="@sugar_memetoken">
 <meta name="theme-color" content="#F7F6F1">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -356,7 +359,10 @@ h2.head{
   .fact__row{flex-direction:column;gap:14px}
   .fig--loaf{width:84px}
   .fig--cube{width:124px;align-self:flex-end}
+  /* three buttons: the buy CTA takes the full row, the two secondaries
+     split the one below — beats leaving one orphaned in a 2x2 */
   .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .cta-row .btn--solid{grid-column:1/-1}
   .btn{justify-content:center;padding-inline:12px}
 }
 @media (max-width:520px){
@@ -408,10 +414,7 @@ h2.head{
           <a class="btn btn--solid" href="#" rel="noopener">Add sugar</a>
           <!-- REPLACE_LINK chart: DexScreener -->
           <a class="btn" href="#" rel="noopener">Chart</a>
-          <!-- REPLACE_LINK x -->
-          <a class="btn" href="#" rel="noopener">X</a>
-          <!-- REPLACE_LINK telegram -->
-          <a class="btn" href="#" rel="noopener">Telegram</a>
+          <a class="btn" href="https://x.com/sugar_memetoken" target="_blank" rel="noopener">X</a>
         </div>
       </div>
 
@@ -627,8 +630,7 @@ h2.head{
         <div class="base__block">
           <h4>Distributed by</h4>
           <div class="base__links">
-            <!-- REPLACE_LINK x --><a href="#" rel="noopener">X</a>
-            <!-- REPLACE_LINK telegram --><a href="#" rel="noopener">Telegram</a>
+            <a href="https://x.com/sugar_memetoken" target="_blank" rel="noopener">X</a>
           </div>
         </div>
 
